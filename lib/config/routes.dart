@@ -14,7 +14,8 @@ class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
     switch (settings.name) {
       case '/Exercise':
-        return _materialRoute(const ExercisePage());
+        final map = settings.arguments as Map<String,dynamic>;
+        return _materialRoute(ExercisePage(exerciseType: map['exerciseType'],));
       case '/Home':
         return _materialRoute(const HomePage());
       case '/Goal':

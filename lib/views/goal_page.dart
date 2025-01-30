@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/config/di/injection_container.dart';
-
 import '../config/app_colors.dart' show AppColors;
 import '../data/local/app_database.dart';
 
@@ -14,84 +12,56 @@ class GoalPage extends StatefulWidget {
 
 class _GoalPageState extends State<GoalPage> {
   final List<String> exercises = [
-    'Pull-ups',
-    'Push-ups',
-    'Plank',
-    'Abs',
-    'Walk/Run',
-    'Squats'
+    'Pull-ups', 'Push-ups', 'Plank', 'Abs', 'Walk/Run', 'Squats'
   ];
 
   String selectedExercise = 'Pull-ups';
-
   final appDatabase = sl<AppDatabase>();
-  final goalControllers = {};
-  final Map<String, Map<String, bool>> goalStatus = {};
-  final Map<String, Map<String, int>> goalValues = {
-    'Pull-ups': {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0},
-    'Push-ups': {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0},
-    'Plank': {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0},
-    'Abs': {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0},
-    'Walk/Run': {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0},
-    'Squats': {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0},
-  };
+
+  // Controllers for goal input fields
+  final TextEditingController dailyController = TextEditingController();
+  final TextEditingController weeklyController = TextEditingController();
+  final TextEditingController monthlyController = TextEditingController();
+  final TextEditingController yearlyController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
+    _loadGoalsForExercise(selectedExercise);
   }
 
-  // Load preferences from SharedPreferences
-  Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    for (var exercise in exercises) {
-      goalControllers[exercise] = {
-        'daily': TextEditingController(text: prefs.getString('$exercise-daily')),
-        'weekly': TextEditingController(text: prefs.getString('$exercise-weekly')),
-        'monthly': TextEditingController(text: prefs.getString('$exercise-monthly')),
-        'yearly': TextEditingController(text: prefs.getString('$exercise-yearly')),
-      };
-      goalStatus[exercise] = {
-        'daily': prefs.getBool('$exercise-daily-status') ?? true,
-        'weekly': prefs.getBool('$exercise-weekly-status') ?? true,
-        'monthly': prefs.getBool('$exercise-monthly-status') ?? true,
-        'yearly': prefs.getBool('$exercise-yearly-status') ?? true,
-      };
-    }
-    setState(() {});
+  @override
+  void dispose() {
+    dailyController.dispose();
+    weeklyController.dispose();
+    monthlyController.dispose();
+    yearlyController.dispose();
+    super.dispose();
   }
 
-  Future<void> _savePreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    for (var exercise in exercises) {
-      prefs.setBool('$exercise-daily-status', goalStatus[exercise]?['daily'] ?? true);
-      prefs.setBool('$exercise-weekly-status', goalStatus[exercise]?['weekly'] ?? true);
-      prefs.setBool('$exercise-monthly-status', goalStatus[exercise]?['monthly'] ?? true);
-      prefs.setBool('$exercise-yearly-status', goalStatus[exercise]?['yearly'] ?? true);
-    }
-  }
-
-  Future<void> _saveGoalsToDatabase() async {
-    for (var exercise in exercises) {
-      await appDatabase.createOrUpdateGoal(
-        exercise,
-        goalValues[exercise]?['daily'] ?? 0,
-        goalValues[exercise]?['weekly'] ?? 0,
-        goalValues[exercise]?['monthly'] ?? 0,
-        goalValues[exercise]?['yearly'] ?? 0,
-      );
+  Future<void> _loadGoalsForExercise(String exercise) async {
+    final goals = await appDatabase.getGoalsForExercise(exercise);
+    if (goals != null) {
+      setState(() {
+        dailyController.text = goals['daily'].toString();
+        weeklyController.text = goals['weekly'].toString();
+        monthlyController.text = goals['monthly'].toString();
+        yearlyController.text = goals['yearly'].toString();
+      });
+    } else {
+      setState(() {
+        dailyController.clear();
+        weeklyController.clear();
+        monthlyController.clear();
+        yearlyController.clear();
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Goals'),
-      ),
+      appBar: AppBar(title: const Text('Goals')),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -119,9 +89,12 @@ class _GoalPageState extends State<GoalPage> {
                   );
                 }).toList(),
                 onChanged: (value) {
-                  setState(() {
-                    selectedExercise = value!;
-                  });
+                  if (value != null) {
+                    setState(() {
+                      selectedExercise = value;
+                    });
+                    _loadGoalsForExercise(value);
+                  }
                 },
               ),
             ),
@@ -130,6 +103,24 @@ class _GoalPageState extends State<GoalPage> {
               flex: 5,
               child: ListView(
                 children: ['daily', 'weekly', 'monthly', 'yearly'].map((period) {
+                  TextEditingController controller;
+                  switch (period) {
+                    case 'daily':
+                      controller = dailyController;
+                      break;
+                    case 'weekly':
+                      controller = weeklyController;
+                      break;
+                    case 'monthly':
+                      controller = monthlyController;
+                      break;
+                    case 'yearly':
+                      controller = yearlyController;
+                      break;
+                    default:
+                      controller = TextEditingController();
+                  }
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Card(
@@ -161,35 +152,20 @@ class _GoalPageState extends State<GoalPage> {
                                 ],
                               ),
                             ),
-                            Switch(
-                              value: goalStatus[selectedExercise]?[period] ?? true,
-                              onChanged: (value) {
-                                setState(() {
-                                  goalStatus[selectedExercise]?[period] = value;
-                                });
-                              },
-                            ),
-                            const SizedBox(width: 12),
-                            if (goalStatus[selectedExercise]?[period] ?? false)
-                              SizedBox(
-                                width: 80,
-                                child: TextField(
-                                  controller: goalControllers[selectedExercise][period],
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
+                            SizedBox(
+                              width: 80,
+                              child: TextField(
+                                controller: controller,
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      goalValues[selectedExercise]?[period] = int.tryParse(value) ?? 0;
-                                    });
-                                  },
                                 ),
                               ),
+                            ),
                           ],
                         ),
                       ),
@@ -200,26 +176,36 @@ class _GoalPageState extends State<GoalPage> {
             ),
             const Spacer(),
             SizedBox(
-                height: 50,
-                width: MediaQuery.sizeOf(context).width,
-                child: TextButton(
-                    style: TextButton.styleFrom(
-                        backgroundColor: AppColors.pinkColor,
-                        elevation: 0,
-                        shape: const LinearBorder()
-                    ),
-                    onPressed: () async {
-                      await _savePreferences();
-                      await _saveGoalsToDatabase();
-                    },
-                    child: const Text('Save Goal', style: TextStyle(
-                        color: AppColors.blueAccentColor, fontSize: 20
-                    ),)
-                )),
+              height: 50,
+              width: MediaQuery.sizeOf(context).width,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: AppColors.pinkColor,
+                  elevation: 0,
+                  shape: const LinearBorder(),
+                ),
+                onPressed: () async {
+                  int daily = int.tryParse(dailyController.text) ?? 0;
+                  int weekly = int.tryParse(weeklyController.text) ?? 0;
+                  int monthly = int.tryParse(monthlyController.text) ?? 0;
+                  int yearly = int.tryParse(yearlyController.text) ?? 0;
+
+                  await appDatabase.updateGoal(
+                      selectedExercise, daily, weekly, monthly, yearly
+                  );
+                },
+                child: const Text(
+                  'Save Goal',
+                  style: TextStyle(
+                    color: AppColors.blueAccentColor,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
-

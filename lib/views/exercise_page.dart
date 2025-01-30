@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:work_out_app/config/app_colors.dart';
+import 'package:work_out_app/data/local/app_database.dart';
+
+import '../config/di/injection_container.dart';
 
 class ExercisePage extends StatefulWidget {
-  const ExercisePage({super.key});
+  final String exerciseType;
+  const ExercisePage({super.key, required this.exerciseType});
 
   @override
   State<ExercisePage> createState() => _ExercisePageState();
@@ -14,7 +18,7 @@ class _ExercisePageState extends State<ExercisePage> {
   bool isStarted = true;
   late Timer _timer;
   int _seconds = 0;
-
+  final db = sl<AppDatabase>();
   @override
   void initState() {
     super.initState();
@@ -34,6 +38,11 @@ class _ExercisePageState extends State<ExercisePage> {
       });
     });
   }
+
+  void _addProgress() async {
+    await db.addExerciseProgress(widget.exerciseType, counter, int.tryParse(_formatTime(_seconds)) ?? 0);
+  }
+
 
   String _formatTime(int seconds) {
     final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
@@ -89,6 +98,8 @@ class _ExercisePageState extends State<ExercisePage> {
                         ),
                         onPressed: () {
                           _timer.cancel();
+                          _addProgress();
+
                           if (counter == 0) {
                             Navigator.pushReplacementNamed(context, '/Home');
                           } else {
@@ -100,6 +111,7 @@ class _ExercisePageState extends State<ExercisePage> {
                             });
                           }
                         },
+
                         child: const Text(
                           'Stop',
                           style: TextStyle(fontSize: 20, color: Colors.white),

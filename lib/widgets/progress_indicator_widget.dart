@@ -12,8 +12,13 @@ class ProgressIndicatorWidget extends StatelessWidget {
     final parts = progress.split('/');
     final current = double.tryParse(parts[0]) ?? 0;
     final total = double.tryParse(parts[1]) ?? 1;
+
+    if (total == 0) {
+      return 0;
+    }
     return current / total;
   }
+
 
   @override
   Widget build(BuildContext context) {

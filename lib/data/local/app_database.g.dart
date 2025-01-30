@@ -8,15 +8,6 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $GoalsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
   static const VerificationMeta _exerciseTypeMeta =
       const VerificationMeta('exerciseType');
   @override
@@ -57,7 +48,7 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
       defaultValue: const Constant(0));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, exerciseType, dailyGoal, weeklyGoal, monthlyGoal, yearlyGoal];
+      [exerciseType, dailyGoal, weeklyGoal, monthlyGoal, yearlyGoal];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -68,9 +59,6 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
     if (data.containsKey('exercise_type')) {
       context.handle(
           _exerciseTypeMeta,
@@ -105,13 +93,11 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {exerciseType};
   @override
   Goal map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Goal(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       exerciseType: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}exercise_type'])!,
       dailyGoal: attachedDatabase.typeMapping
@@ -132,15 +118,13 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
 }
 
 class Goal extends DataClass implements Insertable<Goal> {
-  final int id;
   final String exerciseType;
   final int dailyGoal;
   final int weeklyGoal;
   final int monthlyGoal;
   final int yearlyGoal;
   const Goal(
-      {required this.id,
-      required this.exerciseType,
+      {required this.exerciseType,
       required this.dailyGoal,
       required this.weeklyGoal,
       required this.monthlyGoal,
@@ -148,7 +132,6 @@ class Goal extends DataClass implements Insertable<Goal> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
     map['exercise_type'] = Variable<String>(exerciseType);
     map['daily_goal'] = Variable<int>(dailyGoal);
     map['weekly_goal'] = Variable<int>(weeklyGoal);
@@ -159,7 +142,6 @@ class Goal extends DataClass implements Insertable<Goal> {
 
   GoalsCompanion toCompanion(bool nullToAbsent) {
     return GoalsCompanion(
-      id: Value(id),
       exerciseType: Value(exerciseType),
       dailyGoal: Value(dailyGoal),
       weeklyGoal: Value(weeklyGoal),
@@ -172,7 +154,6 @@ class Goal extends DataClass implements Insertable<Goal> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Goal(
-      id: serializer.fromJson<int>(json['id']),
       exerciseType: serializer.fromJson<String>(json['exerciseType']),
       dailyGoal: serializer.fromJson<int>(json['dailyGoal']),
       weeklyGoal: serializer.fromJson<int>(json['weeklyGoal']),
@@ -184,7 +165,6 @@ class Goal extends DataClass implements Insertable<Goal> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
       'exerciseType': serializer.toJson<String>(exerciseType),
       'dailyGoal': serializer.toJson<int>(dailyGoal),
       'weeklyGoal': serializer.toJson<int>(weeklyGoal),
@@ -194,14 +174,12 @@ class Goal extends DataClass implements Insertable<Goal> {
   }
 
   Goal copyWith(
-          {int? id,
-          String? exerciseType,
+          {String? exerciseType,
           int? dailyGoal,
           int? weeklyGoal,
           int? monthlyGoal,
           int? yearlyGoal}) =>
       Goal(
-        id: id ?? this.id,
         exerciseType: exerciseType ?? this.exerciseType,
         dailyGoal: dailyGoal ?? this.dailyGoal,
         weeklyGoal: weeklyGoal ?? this.weeklyGoal,
@@ -210,7 +188,6 @@ class Goal extends DataClass implements Insertable<Goal> {
       );
   Goal copyWithCompanion(GoalsCompanion data) {
     return Goal(
-      id: data.id.present ? data.id.value : this.id,
       exerciseType: data.exerciseType.present
           ? data.exerciseType.value
           : this.exerciseType,
@@ -227,7 +204,6 @@ class Goal extends DataClass implements Insertable<Goal> {
   @override
   String toString() {
     return (StringBuffer('Goal(')
-          ..write('id: $id, ')
           ..write('exerciseType: $exerciseType, ')
           ..write('dailyGoal: $dailyGoal, ')
           ..write('weeklyGoal: $weeklyGoal, ')
@@ -238,13 +214,12 @@ class Goal extends DataClass implements Insertable<Goal> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, exerciseType, dailyGoal, weeklyGoal, monthlyGoal, yearlyGoal);
+  int get hashCode =>
+      Object.hash(exerciseType, dailyGoal, weeklyGoal, monthlyGoal, yearlyGoal);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Goal &&
-          other.id == this.id &&
           other.exerciseType == this.exerciseType &&
           other.dailyGoal == this.dailyGoal &&
           other.weeklyGoal == this.weeklyGoal &&
@@ -253,69 +228,66 @@ class Goal extends DataClass implements Insertable<Goal> {
 }
 
 class GoalsCompanion extends UpdateCompanion<Goal> {
-  final Value<int> id;
   final Value<String> exerciseType;
   final Value<int> dailyGoal;
   final Value<int> weeklyGoal;
   final Value<int> monthlyGoal;
   final Value<int> yearlyGoal;
+  final Value<int> rowid;
   const GoalsCompanion({
-    this.id = const Value.absent(),
     this.exerciseType = const Value.absent(),
     this.dailyGoal = const Value.absent(),
     this.weeklyGoal = const Value.absent(),
     this.monthlyGoal = const Value.absent(),
     this.yearlyGoal = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   GoalsCompanion.insert({
-    this.id = const Value.absent(),
     required String exerciseType,
     this.dailyGoal = const Value.absent(),
     this.weeklyGoal = const Value.absent(),
     this.monthlyGoal = const Value.absent(),
     this.yearlyGoal = const Value.absent(),
+    this.rowid = const Value.absent(),
   }) : exerciseType = Value(exerciseType);
   static Insertable<Goal> custom({
-    Expression<int>? id,
     Expression<String>? exerciseType,
     Expression<int>? dailyGoal,
     Expression<int>? weeklyGoal,
     Expression<int>? monthlyGoal,
     Expression<int>? yearlyGoal,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
       if (exerciseType != null) 'exercise_type': exerciseType,
       if (dailyGoal != null) 'daily_goal': dailyGoal,
       if (weeklyGoal != null) 'weekly_goal': weeklyGoal,
       if (monthlyGoal != null) 'monthly_goal': monthlyGoal,
       if (yearlyGoal != null) 'yearly_goal': yearlyGoal,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   GoalsCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? exerciseType,
+      {Value<String>? exerciseType,
       Value<int>? dailyGoal,
       Value<int>? weeklyGoal,
       Value<int>? monthlyGoal,
-      Value<int>? yearlyGoal}) {
+      Value<int>? yearlyGoal,
+      Value<int>? rowid}) {
     return GoalsCompanion(
-      id: id ?? this.id,
       exerciseType: exerciseType ?? this.exerciseType,
       dailyGoal: dailyGoal ?? this.dailyGoal,
       weeklyGoal: weeklyGoal ?? this.weeklyGoal,
       monthlyGoal: monthlyGoal ?? this.monthlyGoal,
       yearlyGoal: yearlyGoal ?? this.yearlyGoal,
+      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
     if (exerciseType.present) {
       map['exercise_type'] = Variable<String>(exerciseType.value);
     }
@@ -331,18 +303,21 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
     if (yearlyGoal.present) {
       map['yearly_goal'] = Variable<int>(yearlyGoal.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
   @override
   String toString() {
     return (StringBuffer('GoalsCompanion(')
-          ..write('id: $id, ')
           ..write('exerciseType: $exerciseType, ')
           ..write('dailyGoal: $dailyGoal, ')
           ..write('weeklyGoal: $weeklyGoal, ')
           ..write('monthlyGoal: $monthlyGoal, ')
-          ..write('yearlyGoal: $yearlyGoal')
+          ..write('yearlyGoal: $yearlyGoal, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -663,20 +638,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 }
 
 typedef $$GoalsTableCreateCompanionBuilder = GoalsCompanion Function({
-  Value<int> id,
   required String exerciseType,
   Value<int> dailyGoal,
   Value<int> weeklyGoal,
   Value<int> monthlyGoal,
   Value<int> yearlyGoal,
+  Value<int> rowid,
 });
 typedef $$GoalsTableUpdateCompanionBuilder = GoalsCompanion Function({
-  Value<int> id,
   Value<String> exerciseType,
   Value<int> dailyGoal,
   Value<int> weeklyGoal,
   Value<int> monthlyGoal,
   Value<int> yearlyGoal,
+  Value<int> rowid,
 });
 
 class $$GoalsTableFilterComposer extends Composer<_$AppDatabase, $GoalsTable> {
@@ -687,9 +662,6 @@ class $$GoalsTableFilterComposer extends Composer<_$AppDatabase, $GoalsTable> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<String> get exerciseType => $composableBuilder(
       column: $table.exerciseType, builder: (column) => ColumnFilters(column));
 
@@ -715,9 +687,6 @@ class $$GoalsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<String> get exerciseType => $composableBuilder(
       column: $table.exerciseType,
       builder: (column) => ColumnOrderings(column));
@@ -744,9 +713,6 @@ class $$GoalsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
   GeneratedColumn<String> get exerciseType => $composableBuilder(
       column: $table.exerciseType, builder: (column) => column);
 
@@ -786,36 +752,36 @@ class $$GoalsTableTableManager extends RootTableManager<
           createComputedFieldComposer: () =>
               $$GoalsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
             Value<String> exerciseType = const Value.absent(),
             Value<int> dailyGoal = const Value.absent(),
             Value<int> weeklyGoal = const Value.absent(),
             Value<int> monthlyGoal = const Value.absent(),
             Value<int> yearlyGoal = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
           }) =>
               GoalsCompanion(
-            id: id,
             exerciseType: exerciseType,
             dailyGoal: dailyGoal,
             weeklyGoal: weeklyGoal,
             monthlyGoal: monthlyGoal,
             yearlyGoal: yearlyGoal,
+            rowid: rowid,
           ),
           createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
             required String exerciseType,
             Value<int> dailyGoal = const Value.absent(),
             Value<int> weeklyGoal = const Value.absent(),
             Value<int> monthlyGoal = const Value.absent(),
             Value<int> yearlyGoal = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
           }) =>
               GoalsCompanion.insert(
-            id: id,
             exerciseType: exerciseType,
             dailyGoal: dailyGoal,
             weeklyGoal: weeklyGoal,
             monthlyGoal: monthlyGoal,
             yearlyGoal: yearlyGoal,
+            rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

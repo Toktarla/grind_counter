@@ -1,11 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:work_out_app/config/app_colors.dart';
 import 'package:work_out_app/config/routes.dart';
 import 'package:work_out_app/data/local/app_database.dart';
 import 'package:work_out_app/viewmodels/theme_provider.dart';
 import 'package:work_out_app/views/home_page.dart';
+import 'package:work_out_app/views/debug_widget.dart';
 import 'config/di/injection_container.dart';
 import 'utils/helpers/snackbar_helper.dart';
 
@@ -42,8 +41,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             builder: (_, child) => MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                textScaler: MediaQuery.of(context)
-                    .textScaler
+                textScaler: MediaQuery.of(context).textScaler
                     .clamp(minScaleFactor: 0.8, maxScaleFactor: 1),
               ),
               child: child!,
