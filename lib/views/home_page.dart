@@ -4,6 +4,7 @@ import 'package:work_out_app/config/app_colors.dart';
 import 'package:work_out_app/data/repositories/progress_repository.dart';
 import '../config/di/injection_container.dart';
 import '../utils/data.dart';
+import '../widgets/dropdown_button_widget.dart';
 import '../widgets/progress_indicator_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,31 +22,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade400),
-          ),
-          child: DropdownButton<String>(
-            value: selectedExercise,
-            isExpanded: true,
-            underline: const SizedBox(),
-            items: exercises.map((exercise) {
-              return DropdownMenuItem(
-                value: exercise,
-                child: Text(exercise, style: const TextStyle(fontSize: 16)),
-              );
-            }).toList(),
-            onChanged: (value) async {
-              if (value != null) {
-                setState(() {
-                  selectedExercise = value;
-                });
-              }
-            },
-          ),
+        title: DropdownButtonWidget(
+          value: selectedExercise,
+          onChanged: (value) async {
+            if (value != null) {
+              setState(() {
+                selectedExercise = value;
+              });
+            }
+          },
         ),
         leading: Builder(
           builder: (context) {

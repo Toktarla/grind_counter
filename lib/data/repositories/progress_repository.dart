@@ -9,8 +9,8 @@ class ProgressRepository {
     return await appDatabase.getProgressAndGoalForExercise(exerciseType);
   }
 
-  Future<void> addExerciseProgress(String exerciseType, int count, int duration) async {
-    await appDatabase.addExerciseProgress(exerciseType, count, duration);
+  Future<void> addExerciseProgress(String exerciseType, int count, int duration, String timeElapsed) async {
+    await appDatabase.addExerciseProgress(exerciseType, count, duration, timeElapsed);
   }
 
   Future<List<ProgressData>> getAllProgressRecords(String exerciseType) async {
@@ -19,6 +19,10 @@ class ProgressRepository {
 
   Future<void> deleteProgressRecord(int id) async {
     await appDatabase.deleteProgressRecord(id);
+  }
+
+  Future<void> deleteAllProgressRecords() async {
+    await appDatabase.deleteAllProgressRecords();
   }
 
   Future<int> getExerciseProgress(String exerciseType, DateTime day) async {

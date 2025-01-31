@@ -344,6 +344,12 @@ class $ProgressTable extends Progress
   late final GeneratedColumn<String> exerciseType = GeneratedColumn<String>(
       'exercise_type', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _timeElapsedMeta =
+      const VerificationMeta('timeElapsed');
+  @override
+  late final GeneratedColumn<String> timeElapsed = GeneratedColumn<String>(
+      'time_elapsed', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _countMeta = const VerificationMeta('count');
   @override
   late final GeneratedColumn<int> count = GeneratedColumn<int>(
@@ -363,7 +369,7 @@ class $ProgressTable extends Progress
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, exerciseType, count, duration, timestamp];
+      [id, exerciseType, timeElapsed, count, duration, timestamp];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -384,6 +390,14 @@ class $ProgressTable extends Progress
               data['exercise_type']!, _exerciseTypeMeta));
     } else if (isInserting) {
       context.missing(_exerciseTypeMeta);
+    }
+    if (data.containsKey('time_elapsed')) {
+      context.handle(
+          _timeElapsedMeta,
+          timeElapsed.isAcceptableOrUnknown(
+              data['time_elapsed']!, _timeElapsedMeta));
+    } else if (isInserting) {
+      context.missing(_timeElapsedMeta);
     }
     if (data.containsKey('count')) {
       context.handle(
@@ -416,6 +430,8 @@ class $ProgressTable extends Progress
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       exerciseType: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}exercise_type'])!,
+      timeElapsed: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}time_elapsed'])!,
       count: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}count'])!,
       duration: attachedDatabase.typeMapping
@@ -434,12 +450,14 @@ class $ProgressTable extends Progress
 class ProgressData extends DataClass implements Insertable<ProgressData> {
   final int id;
   final String exerciseType;
+  final String timeElapsed;
   final int count;
   final int duration;
   final DateTime timestamp;
   const ProgressData(
       {required this.id,
       required this.exerciseType,
+      required this.timeElapsed,
       required this.count,
       required this.duration,
       required this.timestamp});
@@ -448,6 +466,7 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['exercise_type'] = Variable<String>(exerciseType);
+    map['time_elapsed'] = Variable<String>(timeElapsed);
     map['count'] = Variable<int>(count);
     map['duration'] = Variable<int>(duration);
     map['timestamp'] = Variable<DateTime>(timestamp);
@@ -458,6 +477,7 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
     return ProgressCompanion(
       id: Value(id),
       exerciseType: Value(exerciseType),
+      timeElapsed: Value(timeElapsed),
       count: Value(count),
       duration: Value(duration),
       timestamp: Value(timestamp),
@@ -470,6 +490,7 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
     return ProgressData(
       id: serializer.fromJson<int>(json['id']),
       exerciseType: serializer.fromJson<String>(json['exerciseType']),
+      timeElapsed: serializer.fromJson<String>(json['timeElapsed']),
       count: serializer.fromJson<int>(json['count']),
       duration: serializer.fromJson<int>(json['duration']),
       timestamp: serializer.fromJson<DateTime>(json['timestamp']),
@@ -481,6 +502,7 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'exerciseType': serializer.toJson<String>(exerciseType),
+      'timeElapsed': serializer.toJson<String>(timeElapsed),
       'count': serializer.toJson<int>(count),
       'duration': serializer.toJson<int>(duration),
       'timestamp': serializer.toJson<DateTime>(timestamp),
@@ -490,12 +512,14 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
   ProgressData copyWith(
           {int? id,
           String? exerciseType,
+          String? timeElapsed,
           int? count,
           int? duration,
           DateTime? timestamp}) =>
       ProgressData(
         id: id ?? this.id,
         exerciseType: exerciseType ?? this.exerciseType,
+        timeElapsed: timeElapsed ?? this.timeElapsed,
         count: count ?? this.count,
         duration: duration ?? this.duration,
         timestamp: timestamp ?? this.timestamp,
@@ -506,6 +530,8 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
       exerciseType: data.exerciseType.present
           ? data.exerciseType.value
           : this.exerciseType,
+      timeElapsed:
+          data.timeElapsed.present ? data.timeElapsed.value : this.timeElapsed,
       count: data.count.present ? data.count.value : this.count,
       duration: data.duration.present ? data.duration.value : this.duration,
       timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
@@ -517,6 +543,7 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
     return (StringBuffer('ProgressData(')
           ..write('id: $id, ')
           ..write('exerciseType: $exerciseType, ')
+          ..write('timeElapsed: $timeElapsed, ')
           ..write('count: $count, ')
           ..write('duration: $duration, ')
           ..write('timestamp: $timestamp')
@@ -525,13 +552,15 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
   }
 
   @override
-  int get hashCode => Object.hash(id, exerciseType, count, duration, timestamp);
+  int get hashCode =>
+      Object.hash(id, exerciseType, timeElapsed, count, duration, timestamp);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ProgressData &&
           other.id == this.id &&
           other.exerciseType == this.exerciseType &&
+          other.timeElapsed == this.timeElapsed &&
           other.count == this.count &&
           other.duration == this.duration &&
           other.timestamp == this.timestamp);
@@ -540,12 +569,14 @@ class ProgressData extends DataClass implements Insertable<ProgressData> {
 class ProgressCompanion extends UpdateCompanion<ProgressData> {
   final Value<int> id;
   final Value<String> exerciseType;
+  final Value<String> timeElapsed;
   final Value<int> count;
   final Value<int> duration;
   final Value<DateTime> timestamp;
   const ProgressCompanion({
     this.id = const Value.absent(),
     this.exerciseType = const Value.absent(),
+    this.timeElapsed = const Value.absent(),
     this.count = const Value.absent(),
     this.duration = const Value.absent(),
     this.timestamp = const Value.absent(),
@@ -553,16 +584,19 @@ class ProgressCompanion extends UpdateCompanion<ProgressData> {
   ProgressCompanion.insert({
     this.id = const Value.absent(),
     required String exerciseType,
+    required String timeElapsed,
     required int count,
     required int duration,
     required DateTime timestamp,
   })  : exerciseType = Value(exerciseType),
+        timeElapsed = Value(timeElapsed),
         count = Value(count),
         duration = Value(duration),
         timestamp = Value(timestamp);
   static Insertable<ProgressData> custom({
     Expression<int>? id,
     Expression<String>? exerciseType,
+    Expression<String>? timeElapsed,
     Expression<int>? count,
     Expression<int>? duration,
     Expression<DateTime>? timestamp,
@@ -570,6 +604,7 @@ class ProgressCompanion extends UpdateCompanion<ProgressData> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (exerciseType != null) 'exercise_type': exerciseType,
+      if (timeElapsed != null) 'time_elapsed': timeElapsed,
       if (count != null) 'count': count,
       if (duration != null) 'duration': duration,
       if (timestamp != null) 'timestamp': timestamp,
@@ -579,12 +614,14 @@ class ProgressCompanion extends UpdateCompanion<ProgressData> {
   ProgressCompanion copyWith(
       {Value<int>? id,
       Value<String>? exerciseType,
+      Value<String>? timeElapsed,
       Value<int>? count,
       Value<int>? duration,
       Value<DateTime>? timestamp}) {
     return ProgressCompanion(
       id: id ?? this.id,
       exerciseType: exerciseType ?? this.exerciseType,
+      timeElapsed: timeElapsed ?? this.timeElapsed,
       count: count ?? this.count,
       duration: duration ?? this.duration,
       timestamp: timestamp ?? this.timestamp,
@@ -599,6 +636,9 @@ class ProgressCompanion extends UpdateCompanion<ProgressData> {
     }
     if (exerciseType.present) {
       map['exercise_type'] = Variable<String>(exerciseType.value);
+    }
+    if (timeElapsed.present) {
+      map['time_elapsed'] = Variable<String>(timeElapsed.value);
     }
     if (count.present) {
       map['count'] = Variable<int>(count.value);
@@ -617,6 +657,7 @@ class ProgressCompanion extends UpdateCompanion<ProgressData> {
     return (StringBuffer('ProgressCompanion(')
           ..write('id: $id, ')
           ..write('exerciseType: $exerciseType, ')
+          ..write('timeElapsed: $timeElapsed, ')
           ..write('count: $count, ')
           ..write('duration: $duration, ')
           ..write('timestamp: $timestamp')
@@ -805,6 +846,7 @@ typedef $$GoalsTableProcessedTableManager = ProcessedTableManager<
 typedef $$ProgressTableCreateCompanionBuilder = ProgressCompanion Function({
   Value<int> id,
   required String exerciseType,
+  required String timeElapsed,
   required int count,
   required int duration,
   required DateTime timestamp,
@@ -812,6 +854,7 @@ typedef $$ProgressTableCreateCompanionBuilder = ProgressCompanion Function({
 typedef $$ProgressTableUpdateCompanionBuilder = ProgressCompanion Function({
   Value<int> id,
   Value<String> exerciseType,
+  Value<String> timeElapsed,
   Value<int> count,
   Value<int> duration,
   Value<DateTime> timestamp,
@@ -831,6 +874,9 @@ class $$ProgressTableFilterComposer
 
   ColumnFilters<String> get exerciseType => $composableBuilder(
       column: $table.exerciseType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get timeElapsed => $composableBuilder(
+      column: $table.timeElapsed, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get count => $composableBuilder(
       column: $table.count, builder: (column) => ColumnFilters(column));
@@ -858,6 +904,9 @@ class $$ProgressTableOrderingComposer
       column: $table.exerciseType,
       builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get timeElapsed => $composableBuilder(
+      column: $table.timeElapsed, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<int> get count => $composableBuilder(
       column: $table.count, builder: (column) => ColumnOrderings(column));
 
@@ -882,6 +931,9 @@ class $$ProgressTableAnnotationComposer
 
   GeneratedColumn<String> get exerciseType => $composableBuilder(
       column: $table.exerciseType, builder: (column) => column);
+
+  GeneratedColumn<String> get timeElapsed => $composableBuilder(
+      column: $table.timeElapsed, builder: (column) => column);
 
   GeneratedColumn<int> get count =>
       $composableBuilder(column: $table.count, builder: (column) => column);
@@ -918,6 +970,7 @@ class $$ProgressTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> exerciseType = const Value.absent(),
+            Value<String> timeElapsed = const Value.absent(),
             Value<int> count = const Value.absent(),
             Value<int> duration = const Value.absent(),
             Value<DateTime> timestamp = const Value.absent(),
@@ -925,6 +978,7 @@ class $$ProgressTableTableManager extends RootTableManager<
               ProgressCompanion(
             id: id,
             exerciseType: exerciseType,
+            timeElapsed: timeElapsed,
             count: count,
             duration: duration,
             timestamp: timestamp,
@@ -932,6 +986,7 @@ class $$ProgressTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String exerciseType,
+            required String timeElapsed,
             required int count,
             required int duration,
             required DateTime timestamp,
@@ -939,6 +994,7 @@ class $$ProgressTableTableManager extends RootTableManager<
               ProgressCompanion.insert(
             id: id,
             exerciseType: exerciseType,
+            timeElapsed: timeElapsed,
             count: count,
             duration: duration,
             timestamp: timestamp,

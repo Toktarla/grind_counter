@@ -47,7 +47,6 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  // Fetch goals for a specific exercise
   Future<Map<String, int>> getGoalsForExercise(String exerciseType) async {
     final goal = await (select(goals)
       ..where((tbl) => tbl.exerciseType.equals(exerciseType)))
@@ -65,12 +64,10 @@ class AppDatabase extends _$AppDatabase {
     };
   }
 
-  // Fetch all goals
   Future<List<Goal>> getAllGoals() async {
     return await select(goals).get();
   }
 
-  // Update existing goal values
   Future<void> updateGoal(String exerciseType, int daily, int weekly, int monthly, int yearly) async {
     await (update(goals)
       ..where((tbl) => tbl.exerciseType.equals(exerciseType)))
@@ -82,24 +79,22 @@ class AppDatabase extends _$AppDatabase {
     ));
   }
 
-  // Add exercise progress for the current day
-  Future<void> addExerciseProgress(String exerciseType, int count, int duration) async {
+  Future<void> addExerciseProgress(String exerciseType, int count, int duration, String timeElapsed) async {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
 
-    // Check if progress already exists for today
     final existingProgress = await (select(progress)
       ..where((tbl) =>
       tbl.exerciseType.equals(exerciseType) & tbl.timestamp.equals(startOfDay)))
         .getSingleOrNull();
 
     if (existingProgress != null) {
-      // Update existing progress for the day
       await (update(progress)
         ..where((tbl) => tbl.exerciseType.equals(exerciseType) & tbl.timestamp.equals(startOfDay)))
           .write(ProgressCompanion(
         count: Value(existingProgress.count + count),
         duration: Value(existingProgress.duration + duration),
+        timeElapsed: Value(timeElapsed)
       ));
     } else {
       // Insert new progress for the day
@@ -109,12 +104,12 @@ class AppDatabase extends _$AppDatabase {
           count: count,
           duration: duration,
           timestamp: startOfDay,
+          timeElapsed: timeElapsed
         ),
       );
     }
   }
 
-  // Reset progress after a specific time period
   Future<void> _resetProgress() async {
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
@@ -122,7 +117,6 @@ class AppDatabase extends _$AppDatabase {
     final startOfMonth = DateTime(now.year, now.month, 1);
     final startOfYear = DateTime(now.year, 1, 1);
 
-    // Reset daily progress to 0 at the start of the new day
     await (update(progress)
       ..where((tbl) => tbl.timestamp.equals(startOfDay)))
         .write(const ProgressCompanion(
@@ -130,7 +124,6 @@ class AppDatabase extends _$AppDatabase {
       duration: Value(0),
     ));
 
-    // Reset weekly progress after 7 days
     if (now.difference(startOfWeek).inDays >= 7) {
       await (update(progress)
         ..where((tbl) => tbl.timestamp.equals(startOfWeek)))
@@ -140,7 +133,6 @@ class AppDatabase extends _$AppDatabase {
       ));
     }
 
-    // Reset monthly progress after 30 days
     if (now.difference(startOfMonth).inDays >= 30) {
       await (update(progress)
         ..where((tbl) => tbl.timestamp.equals(startOfMonth)))
@@ -150,7 +142,6 @@ class AppDatabase extends _$AppDatabase {
       ));
     }
 
-    // Reset yearly progress after 365 days
     if (now.difference(startOfYear).inDays >= 365) {
       await (update(progress)
         ..where((tbl) => tbl.timestamp.equals(startOfYear)))
@@ -161,7 +152,6 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  // Fetch all progress records (history page)
   Future<List<ProgressData>> getAllProgressRecords(String exerciseType) async {
     return (select(progress)
       ..where((tbl) => tbl.exerciseType.equals(exerciseType))
@@ -169,12 +159,14 @@ class AppDatabase extends _$AppDatabase {
         .get();
   }
 
-  // Delete a specific progress record
   Future<void> deleteProgressRecord(int id) async {
     await (delete(progress)..where((tbl) => tbl.id.equals(id))).go();
   }
 
-  // Fetch progress for a specific day (used for statistics)
+  Future<void> deleteAllProgressRecords() async {
+    await delete(progress).go();
+  }
+
   Future<int> getExerciseProgress(String exerciseType, DateTime day) async {
     final startOfDay = DateTime(day.year, day.month, day.day);
 
@@ -195,19 +187,16 @@ class AppDatabase extends _$AppDatabase {
   Future<Map<String, String>> getProgressAndGoalForExercise(String exerciseType) async {
     final now = DateTime.now();
 
-    // Calculate start times for each period
     final startOfDay = DateTime(now.year, now.month, now.day);
     final startOfWeek = DateTime(now.year, now.month, now.day - now.weekday + 1);
     final startOfMonth = DateTime(now.year, now.month, 1);
     final startOfYear = DateTime(now.year, 1, 1);
 
-    // Get progress for each timeframe
     final dailyProgress = await getExerciseProgress(exerciseType, startOfDay);
     final weeklyProgress = await getExerciseProgress(exerciseType, startOfWeek);
     final monthlyProgress = await getExerciseProgress(exerciseType, startOfMonth);
     final yearlyProgress = await getExerciseProgress(exerciseType, startOfYear);
 
-    // Get goals for the exercise
     final goals = await getGoalsForExercise(exerciseType);
 
     return {

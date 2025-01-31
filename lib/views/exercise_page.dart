@@ -88,7 +88,7 @@ class _ExercisePageState extends State<ExercisePage> {
                         ),
                         onPressed: () {
                           _timer.cancel();
-                          sl<ProgressRepository>().addExerciseProgress(widget.exerciseType, counter, int.tryParse(DateHelper.formatTime(_seconds)) ?? 0);
+                          sl<ProgressRepository>().addExerciseProgress(widget.exerciseType, counter, int.tryParse(DateHelper.formatTime(_seconds)) ?? 0, DateHelper.formatTime(_seconds));
 
                           if (counter == 0) {
                             Navigator.pushReplacementNamed(context, '/Home');

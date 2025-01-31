@@ -3,6 +3,7 @@ import 'package:work_out_app/config/di/injection_container.dart';
 import 'package:work_out_app/data/repositories/goal_repository.dart';
 import '../config/app_colors.dart' show AppColors;
 import '../utils/data.dart';
+import '../widgets/dropdown_button_widget.dart';
 
 class GoalPage extends StatefulWidget {
   const GoalPage({super.key});
@@ -59,32 +60,15 @@ class _GoalPageState extends State<GoalPage> {
               'Exercise',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade400),
-              ),
-              child: DropdownButton<String>(
-                value: selectedExercise,
-                isExpanded: true,
-                underline: const SizedBox(),
-                items: exercises.map((exercise) {
-                  return DropdownMenuItem(
-                    value: exercise,
-                    child: Text(exercise, style: const TextStyle(fontSize: 16)),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      selectedExercise = value;
-                    });
-                    _loadGoalsForExercise(value);
-                  }
-                },
-              ),
+            DropdownButtonWidget(
+              value: selectedExercise,
+              onChanged: (value) async {
+                if (value != null) {
+                  setState(() {
+                    selectedExercise = value;
+                  });
+                }
+              },
             ),
             const SizedBox(height: 20),
             Expanded(

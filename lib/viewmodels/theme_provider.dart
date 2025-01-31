@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../config/app_colors.dart';
 import '../../../utils/animations/fade_in_transition.dart';
@@ -48,7 +49,7 @@ class ThemeProvider with ChangeNotifier {
     iconTheme: const IconThemeData(
       color: Colors.grey,
     ),
-    textTheme: const TextTheme(),
+    textTheme: GoogleFonts.nunitoTextTheme(),
     appBarTheme: const AppBarTheme(
       color: AppColors.cyanColor,
       elevation: 5,
@@ -66,6 +67,7 @@ class ThemeProvider with ChangeNotifier {
         TargetPlatform.iOS: FadePageTransitionsBuilder(),
       },
     ),
+    textTheme: GoogleFonts.nunitoTextTheme(),
     brightness: Brightness.dark,
     primaryColor: AppColors.blueColor,
     drawerTheme: const DrawerThemeData(
@@ -89,59 +91,6 @@ class ThemeProvider with ChangeNotifier {
     ),
     appBarTheme: const AppBarTheme(
       elevation: 5,
-    ),
-    textTheme: const TextTheme(
-      displayLarge: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
-      ),
-      displayMedium: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 14,
-      ),
-      displaySmall: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 12,
-      ),
-      titleLarge: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
-      ),
-      titleMedium: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 14,
-      ),
-      titleSmall: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 12,
-      ),
-      bodyLarge: TextStyle(
-        color: AppColors.pinkColor,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
-      bodyMedium: TextStyle(
-        color: AppColors.pinkColor,
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-      ),
-      bodySmall: TextStyle(
-        color: AppColors.pinkColor,
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-      ),
-      labelLarge: TextStyle(color: Colors.white),
-      labelSmall: TextStyle(
-        color: AppColors.pinkColor,
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-      ),
     ),
     cardColor: AppColors.blueColor,
     scaffoldBackgroundColor: Colors.white10,
