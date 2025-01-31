@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../config/app_colors.dart';
 import '../../../utils/animations/fade_in_transition.dart';
@@ -88,7 +87,7 @@ class ThemeProvider with ChangeNotifier {
     iconTheme: const IconThemeData(
       color: AppColors.whiteColor,
     ),
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       elevation: 5,
     ),
     textTheme: const TextTheme(
@@ -148,7 +147,7 @@ class ThemeProvider with ChangeNotifier {
     scaffoldBackgroundColor: Colors.white10,
     dialogTheme: DialogTheme(
       backgroundColor: Colors.black26,
-      contentTextStyle: TextStyle(color: Colors.grey),
+      contentTextStyle: const TextStyle(color: Colors.grey),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),

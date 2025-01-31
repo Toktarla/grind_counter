@@ -36,10 +36,10 @@ class AppDatabase extends _$AppDatabase {
         await into(goals).insert(
           GoalsCompanion.insert(
             exerciseType: type,
-            dailyGoal: const Value(0),
-            weeklyGoal: const Value(0),
-            monthlyGoal: const Value(0),
-            yearlyGoal: const Value(0),
+            dailyGoal: const Value(10),
+            weeklyGoal: const Value(50),
+            monthlyGoal: const Value(1500),
+            yearlyGoal: const Value(15000),
           ),
           mode: InsertMode.insertOrIgnore,
         );
@@ -125,18 +125,18 @@ class AppDatabase extends _$AppDatabase {
     // Reset daily progress to 0 at the start of the new day
     await (update(progress)
       ..where((tbl) => tbl.timestamp.equals(startOfDay)))
-        .write(ProgressCompanion(
-      count: const Value(0),
-      duration: const Value(0),
+        .write(const ProgressCompanion(
+      count: Value(0),
+      duration: Value(0),
     ));
 
     // Reset weekly progress after 7 days
     if (now.difference(startOfWeek).inDays >= 7) {
       await (update(progress)
         ..where((tbl) => tbl.timestamp.equals(startOfWeek)))
-          .write(ProgressCompanion(
-        count: const Value(0),
-        duration: const Value(0),
+          .write(const ProgressCompanion(
+        count: Value(0),
+        duration: Value(0),
       ));
     }
 
@@ -144,9 +144,9 @@ class AppDatabase extends _$AppDatabase {
     if (now.difference(startOfMonth).inDays >= 30) {
       await (update(progress)
         ..where((tbl) => tbl.timestamp.equals(startOfMonth)))
-          .write(ProgressCompanion(
-        count: const Value(0),
-        duration: const Value(0),
+          .write(const ProgressCompanion(
+        count: Value(0),
+        duration: Value(0),
       ));
     }
 
@@ -154,9 +154,9 @@ class AppDatabase extends _$AppDatabase {
     if (now.difference(startOfYear).inDays >= 365) {
       await (update(progress)
         ..where((tbl) => tbl.timestamp.equals(startOfYear)))
-          .write(ProgressCompanion(
-        count: const Value(0),
-        duration: const Value(0),
+          .write(const ProgressCompanion(
+        count: Value(0),
+        duration: Value(0),
       ));
     }
   }
@@ -185,7 +185,7 @@ class AppDatabase extends _$AppDatabase {
 
     int totalProgress = 0;
     for (var record in progressData) {
-      totalProgress += record.count ?? 0; // Ensure null safety
+      totalProgress += record.count;
     }
 
     return totalProgress;

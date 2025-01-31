@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:work_out_app/config/di/injection_container.dart';
+import 'package:work_out_app/data/repositories/goal_repository.dart';
 import '../config/app_colors.dart' show AppColors;
-import '../data/local/app_database.dart';
+import '../utils/data.dart';
 
 class GoalPage extends StatefulWidget {
   const GoalPage({super.key});
 
   @override
-  _GoalPageState createState() => _GoalPageState();
+  State<GoalPage> createState() => _GoalPageState();
 }
 
 class _GoalPageState extends State<GoalPage> {
-  final List<String> exercises = [
-    'Pull-ups', 'Push-ups', 'Plank', 'Abs', 'Walk/Run', 'Squats'
-  ];
 
   String selectedExercise = 'Pull-ups';
-  final appDatabase = sl<AppDatabase>();
+  final goalRepository = sl<GoalRepository>();
 
-  // Controllers for goal input fields
   final TextEditingController dailyController = TextEditingController();
   final TextEditingController weeklyController = TextEditingController();
   final TextEditingController monthlyController = TextEditingController();
@@ -40,23 +37,14 @@ class _GoalPageState extends State<GoalPage> {
   }
 
   Future<void> _loadGoalsForExercise(String exercise) async {
-    final goals = await appDatabase.getGoalsForExercise(exercise);
-    if (goals != null) {
-      setState(() {
-        dailyController.text = goals['daily'].toString();
-        weeklyController.text = goals['weekly'].toString();
-        monthlyController.text = goals['monthly'].toString();
-        yearlyController.text = goals['yearly'].toString();
-      });
-    } else {
-      setState(() {
-        dailyController.clear();
-        weeklyController.clear();
-        monthlyController.clear();
-        yearlyController.clear();
-      });
+    final goals = await goalRepository.getGoalsForExercise(exercise);
+    setState(() {
+      dailyController.text = goals['daily'].toString();
+      weeklyController.text = goals['weekly'].toString();
+      monthlyController.text = goals['monthly'].toString();
+      yearlyController.text = goals['yearly'].toString();
+    });
     }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +178,7 @@ class _GoalPageState extends State<GoalPage> {
                   int monthly = int.tryParse(monthlyController.text) ?? 0;
                   int yearly = int.tryParse(yearlyController.text) ?? 0;
 
-                  await appDatabase.updateGoal(
+                  await goalRepository.updateGoal(
                       selectedExercise, daily, weekly, monthly, yearly
                   );
                 },

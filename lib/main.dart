@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/config/routes.dart';
-import 'package:work_out_app/data/local/app_database.dart';
 import 'package:work_out_app/viewmodels/theme_provider.dart';
 import 'package:work_out_app/views/home_page.dart';
-import 'package:work_out_app/views/debug_widget.dart';
 import 'config/di/injection_container.dart';
 import 'utils/helpers/snackbar_helper.dart';
 

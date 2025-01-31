@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // For better icons
-import 'package:intl/intl.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:work_out_app/widgets/detail_card_widget.dart';
-
+import '../config/di/injection_container.dart';
+import '../data/repositories/progress_repository.dart';
+import '../utils/helpers/date_helper.dart';
 import '../widgets/progress_indicator_widget.dart';
 
 class SummaryPage extends StatelessWidget {
@@ -19,13 +20,10 @@ class SummaryPage extends StatelessWidget {
     required this.timeElapsed,
   });
 
-  String formatDate(String date) {
-    final parsedDate = DateTime.parse(date);
-    return DateFormat('MMMM dd, yyyy, hh:mm a').format(parsedDate);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final progressRepository = sl<ProgressRepository>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Workout Summary'),
@@ -61,7 +59,7 @@ class SummaryPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              formatDate(date),
+              DateHelper.formatDate(date),
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 24),
@@ -88,13 +86,31 @@ class SummaryPage extends StatelessWidget {
             ),
 
             const SizedBox(height: 24),
-            const ProgressIndicatorWidget(label: 'Today', progress: '22/20'),
-            const SizedBox(height: 16),
-            const ProgressIndicatorWidget(label: 'Week',progress: '22/75'),
-            const SizedBox(height: 16),
-            const ProgressIndicatorWidget(label: 'Month',progress: '50/200'),
-            const SizedBox(height: 16),
-            const ProgressIndicatorWidget(label: 'Year',progress: '300/1000'),
+            FutureBuilder<Map<String, String>>(
+              future: progressRepository.getProgressAndGoalForExercise(workout),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return const Text('Error loading progress');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Text('No progress data available');
+                } else {
+                  final progress = snapshot.data!;
+                  return Column(
+                    children: [
+                      ProgressIndicatorWidget(label: 'Today', progress: progress['daily'] ?? '0/0'),
+                      const SizedBox(height: 16),
+                      ProgressIndicatorWidget(label: 'Week', progress: progress['weekly'] ?? '0/0'),
+                      const SizedBox(height: 16),
+                      ProgressIndicatorWidget(label: 'Month', progress: progress['monthly'] ?? '0/0'),
+                      const SizedBox(height: 16),
+                      ProgressIndicatorWidget(label: 'Year', progress: progress['yearly'] ?? '0/0'),
+                    ],
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),

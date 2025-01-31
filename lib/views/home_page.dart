@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:work_out_app/components/drawer.dart';
 import 'package:work_out_app/config/app_colors.dart';
-import 'package:work_out_app/data/local/app_database.dart';
-import 'package:work_out_app/main.dart';
-import 'package:work_out_app/viewmodels/theme_provider.dart';
+import 'package:work_out_app/data/repositories/progress_repository.dart';
 import '../config/di/injection_container.dart';
+import '../utils/data.dart';
 import '../widgets/progress_indicator_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,26 +14,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<Map<String, String>> _progressFuture;
-  final db = sl<AppDatabase>();
   String selectedExercise = 'Push-ups';
-
-  final List<String> exercises = [
-    'Push-ups', 'Pull-ups', 'Plank', 'Abs', 'Walk/Run', 'Squats'
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _progressFuture = _fetchProgress();
-  }
-
-  // Fetch progress and goals for a specific exercise
-  Future<Map<String, String>> _fetchProgress() async {
-    final progress = await db.getProgressAndGoalForExercise(selectedExercise);
-    return progress;
-  }
-
+  final progressRepository = sl<ProgressRepository>();
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +42,6 @@ class _HomePageState extends State<HomePage> {
               if (value != null) {
                 setState(() {
                   selectedExercise = value;
-                  _progressFuture = _fetchProgress();
                 });
               }
             },
@@ -99,53 +78,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      drawer: SafeArea(
-        child: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              ListTile(
-                leading: Provider.of<ThemeProvider>(context).currentTheme.brightness == Brightness.light
-                    ? const Icon(Icons.light_mode_outlined)
-                    : const Icon(Icons.dark_mode_outlined),
-                title: const Text('Theme'),
-                onTap: () {
-                  Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/Settings');
-                },
-              ),
-              const Divider(),
-              ListTile(
-                title: const Text('Remove Ads'),
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Text('Send Feedback'),
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Text('Share'),
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Text('Rate'),
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Text('About'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/About');
-                },
-              ),
-            ],
-          ),
-        ),
+      drawer: const SafeArea(
+        child: MyDrawer()
       ),
       body: Center(
         child: Padding(
@@ -168,7 +102,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 24),
               FutureBuilder<Map<String, String>>(
-                future: _progressFuture,
+                future: progressRepository.getProgressAndGoalForExercise(selectedExercise),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();

@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 
 class StatsPage extends StatelessWidget {
+  const StatsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stats'),
+        title: const Text('Stats'),
         actions: [
           IconButton(
-            icon: Icon(Icons.share),
+            icon: const Icon(Icons.share),
             onPressed: () {
               // Share stats
             },
           )
         ],
       ),
-      body: Center(
+      body: const Center(
         child: Text('Stats Page - Coming Soon'),
       ),
     );

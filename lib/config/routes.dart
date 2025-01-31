@@ -19,17 +19,15 @@ class AppRoutes {
       case '/Home':
         return _materialRoute(const HomePage());
       case '/Goal':
-        return _materialRoute(GoalPage());
+        return _materialRoute(const GoalPage());
       case '/Logs':
-        return _materialRoute(LogsPage());
+        return _materialRoute(const LogsPage());
       case '/Stats':
-        return _materialRoute(StatsPage());
+        return _materialRoute(const StatsPage());
       case '/Settings':
-        return _materialRoute(SettingsPage());
+        return _materialRoute(const SettingsPage());
       case '/About':
-        return _materialRoute(AboutPage());
-      case '/Stats':
-        return _materialRoute(StatsPage());
+        return _materialRoute(const AboutPage());
       case '/Summary':
         final map = settings.arguments as Map<String,dynamic>;
         return _materialRoute(SummaryPage(workout: map['workout'], date: map['date'], counter: map['counter'], timeElapsed: map['timeElapsed'],));

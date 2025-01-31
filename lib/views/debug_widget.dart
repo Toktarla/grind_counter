@@ -4,10 +4,10 @@ import 'package:work_out_app/data/local/app_database.dart';
 class WorkoutTrackerWidget extends StatefulWidget {
   final AppDatabase database;
 
-  const WorkoutTrackerWidget({Key? key, required this.database}) : super(key: key);
+  const WorkoutTrackerWidget({super.key, required this.database});
 
   @override
-  _WorkoutTrackerWidgetState createState() => _WorkoutTrackerWidgetState();
+  State<WorkoutTrackerWidget> createState() => _WorkoutTrackerWidgetState();
 }
 
 class _WorkoutTrackerWidgetState extends State<WorkoutTrackerWidget> {
@@ -119,7 +119,7 @@ class _WorkoutTrackerWidgetState extends State<WorkoutTrackerWidget> {
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );

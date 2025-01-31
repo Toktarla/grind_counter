@@ -1,36 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:work_out_app/data/local/app_database.dart';
-import '../config/di/injection_container.dart'; // Ensure you have access to your database
+import 'package:work_out_app/utils/data.dart';
+import '../config/di/injection_container.dart';
 
 class LogsPage extends StatefulWidget {
+  const LogsPage({super.key});
+
   @override
-  _LogsPageState createState() => _LogsPageState();
+  State<LogsPage> createState() => _LogsPageState();
 }
 
 class _LogsPageState extends State<LogsPage> {
-  final db = sl<AppDatabase>(); // Assuming you have an instance of your database
+  final db = sl<AppDatabase>();
   late Future<List<ProgressData>> _workoutLogsFuture;
   String? selectedExerciseType = 'Push-ups';
-  final List<String> exerciseTypes = [
-    'Push-ups', 'Pull-ups', 'Plank', 'Abs', 'Walk/Run', 'Squats'
-  ];
+
   @override
   void initState() {
     super.initState();
-    selectedExerciseType = exerciseTypes[0]; // Default selection
+    selectedExerciseType = exercises[0];
     _workoutLogsFuture = _fetchWorkoutLogs();
   }
 
   Future<List<ProgressData>> _fetchWorkoutLogs() async {
-    // Fetch logs based on the selected exercise type
-    return await db.getAllProgressRecords(selectedExerciseType!); // Pass the selected exercise type
+    return await db.getAllProgressRecords(selectedExerciseType!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Workout Logs'),
+        title: const Text('Workout History'),
+        actions: [
+          IconButton(onPressed: () {
+
+          }, icon: const Icon(Icons.delete))
+        ],
       ),
       body: Column(
         children: [
@@ -44,7 +49,7 @@ class _LogsPageState extends State<LogsPage> {
                   _workoutLogsFuture = _fetchWorkoutLogs(); // Re-fetch logs when exercise type changes
                 });
               },
-              items: exerciseTypes.map<DropdownMenuItem<String>>((String value) {
+              items: exercises.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -57,11 +62,11 @@ class _LogsPageState extends State<LogsPage> {
               future: _workoutLogsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error loading logs'));
+                  return const Center(child: Text('Error loading logs'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No workout logs available'));
+                  return const Center(child: Text('No workout logs available'));
                 } else {
                   List<ProgressData> logs = snapshot.data!;
 
@@ -88,7 +93,7 @@ class _LogsPageState extends State<LogsPage> {
                             title: Text('${log.timestamp.month} ${log.timestamp.day}, ${log.timestamp.year}, ${log.timestamp}'),
                             subtitle: Text('Exercise: ${log.exerciseType}'),
                             trailing: IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: const Icon(Icons.delete),
                               onPressed: () {
                                 // Handle delete action
                                 _deleteLog(log.id);

@@ -28,7 +28,7 @@ class SnackbarHelper {
       message: message,
       duration: duration,
       action: action,
-      backgroundColor: Color.fromRGBO(108, 14, 14,1),
+      backgroundColor: const Color.fromRGBO(108, 14, 14,1),
     );
   }
 
@@ -45,7 +45,7 @@ class SnackbarHelper {
       message: message,
       duration: duration,
       action: action,
-      backgroundColor: Color.fromRGBO(18, 107, 25,1),
+      backgroundColor: const Color.fromRGBO(18, 107, 25,1),
     );
   }
 }

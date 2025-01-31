@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:work_out_app/config/app_colors.dart';
-import 'package:work_out_app/data/local/app_database.dart';
+import 'package:work_out_app/data/repositories/progress_repository.dart';
 
 import '../config/di/injection_container.dart';
+import '../utils/helpers/date_helper.dart';
 
 class ExercisePage extends StatefulWidget {
   final String exerciseType;
@@ -18,7 +19,7 @@ class _ExercisePageState extends State<ExercisePage> {
   bool isStarted = true;
   late Timer _timer;
   int _seconds = 0;
-  final db = sl<AppDatabase>();
+
   @override
   void initState() {
     super.initState();
@@ -37,17 +38,6 @@ class _ExercisePageState extends State<ExercisePage> {
         _seconds++;
       });
     });
-  }
-
-  void _addProgress() async {
-    await db.addExerciseProgress(widget.exerciseType, counter, int.tryParse(_formatTime(_seconds)) ?? 0);
-  }
-
-
-  String _formatTime(int seconds) {
-    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
-    final secs = (seconds % 60).toString().padLeft(2, '0');
-    return "$minutes:$secs";
   }
 
   @override
@@ -69,7 +59,7 @@ class _ExercisePageState extends State<ExercisePage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  _formatTime(_seconds),
+                DateHelper.formatTime(_seconds),
                   style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24),
@@ -98,16 +88,16 @@ class _ExercisePageState extends State<ExercisePage> {
                         ),
                         onPressed: () {
                           _timer.cancel();
-                          _addProgress();
+                          sl<ProgressRepository>().addExerciseProgress(widget.exerciseType, counter, int.tryParse(DateHelper.formatTime(_seconds)) ?? 0);
 
                           if (counter == 0) {
                             Navigator.pushReplacementNamed(context, '/Home');
                           } else {
                             Navigator.pushNamed(context, '/Summary', arguments: {
-                              'workout': 'Push-Ups',
+                              'workout': widget.exerciseType,
                               'date': DateTime.now().toString(),
                               'counter': counter,
-                              'timeElapsed': _formatTime(_seconds),
+                              'timeElapsed': DateHelper.formatTime(_seconds),
                             });
                           }
                         },
