@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_out_app/config/di/injection_container.dart';
-import 'package:work_out_app/data/repositories/goal_repository.dart';
 import '../config/app_colors.dart' show AppColors;
+import '../repositories/goal_repository.dart';
 import '../utils/data.dart';
 import '../widgets/dropdown_button_widget.dart';
 
@@ -14,7 +14,7 @@ class GoalPage extends StatefulWidget {
 
 class _GoalPageState extends State<GoalPage> {
 
-  String selectedExercise = 'Pull-ups';
+  String selectedExercise = 'Push-ups';
   final goalRepository = sl<GoalRepository>();
 
   final TextEditingController dailyController = TextEditingController();

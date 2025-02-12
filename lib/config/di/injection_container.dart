@@ -1,8 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/data/local/app_database.dart';
-import 'package:work_out_app/data/repositories/goal_repository.dart';
-import 'package:work_out_app/data/repositories/progress_repository.dart';
+import '../../repositories/goal_repository.dart';
+import '../../repositories/progress_repository.dart';
 import '../../viewmodels/theme_provider.dart';
 
 final sl = GetIt.instance;

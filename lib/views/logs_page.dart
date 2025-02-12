@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:work_out_app/data/local/app_database.dart';
-import 'package:work_out_app/data/repositories/progress_repository.dart';
-import 'package:work_out_app/utils/data.dart';
 import 'package:work_out_app/utils/helpers/date_helper.dart';
 import 'package:work_out_app/widgets/dropdown_button_widget.dart';
-import '../config/app_colors.dart';
 import '../config/di/injection_container.dart';
+import '../repositories/progress_repository.dart';
+import '../utils/data.dart';
 
 class LogsPage extends StatefulWidget {
   const LogsPage({super.key});
@@ -116,7 +116,8 @@ class _LogsPageState extends State<LogsPage> {
                                 IconButton(
                                   icon: const Icon(Icons.share),
                                   onPressed: () {
-                                    // Add share functionality
+                                    final text = "Hey, I did ${log.count} $selectedExercise in ${log.timeElapsed} using 'Grind Counter' app. Can you beat my score? $appUrl";
+                                    Share.share(text);
                                   },
                                 ),
                                 IconButton(

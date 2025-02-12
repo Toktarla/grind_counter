@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../utils/data.dart';
 import '../viewmodels/theme_provider.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -35,15 +37,25 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Send Feedback'),
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/Feedback');
+            },
           ),
           ListTile(
             title: const Text('Share'),
-            onTap: () {},
+            onTap: () {
+              Share.share(appLink);
+            },
           ),
           ListTile(
             title: const Text('Rate'),
-            onTap: () {},
+            onTap: () async {
+              if (await canLaunchUrl(Uri.parse(appUrl))) {
+              await launchUrl(Uri.parse(appUrl), mode: LaunchMode.externalApplication);
+              } else {
+              debugPrint("Could not launch $appUrl");
+              }
+            },
           ),
           ListTile(
             title: const Text('About'),

@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/config/app_colors.dart';
-import 'package:work_out_app/data/repositories/progress_repository.dart';
-
 import '../config/di/injection_container.dart';
+import '../repositories/progress_repository.dart';
 import '../utils/helpers/date_helper.dart';
 
 class ExercisePage extends StatefulWidget {
@@ -19,11 +20,20 @@ class _ExercisePageState extends State<ExercisePage> {
   bool isStarted = true;
   late Timer _timer;
   int _seconds = 0;
+  bool playSound = false;
 
   @override
   void initState() {
     super.initState();
+    _loadSettings();
     _startTimer();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = sl<SharedPreferences>();
+    setState(() {
+      playSound = prefs.getBool('playSound') ?? false;
+    });
   }
 
   @override
@@ -40,6 +50,15 @@ class _ExercisePageState extends State<ExercisePage> {
     });
   }
 
+  Future<void> _playSound() async {
+    try {
+      final player = AudioPlayer();
+      await player.play(AssetSource('sounds/click.wav'));
+    } catch (e) {
+      debugPrint("Error playing sound: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +71,10 @@ class _ExercisePageState extends State<ExercisePage> {
               setState(() {
                 counter++;
               });
+
+              if (playSound) {
+                _playSound();
+              }
             }
           },
           child: Center(
@@ -59,7 +82,7 @@ class _ExercisePageState extends State<ExercisePage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                DateHelper.formatTime(_seconds),
+                  DateHelper.formatTime(_seconds),
                   style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24),
@@ -88,7 +111,12 @@ class _ExercisePageState extends State<ExercisePage> {
                         ),
                         onPressed: () {
                           _timer.cancel();
-                          sl<ProgressRepository>().addExerciseProgress(widget.exerciseType, counter, int.tryParse(DateHelper.formatTime(_seconds)) ?? 0, DateHelper.formatTime(_seconds));
+                          sl<ProgressRepository>().addExerciseProgress(
+                            widget.exerciseType,
+                            counter,
+                            int.tryParse(DateHelper.formatTime(_seconds)) ?? 0,
+                            DateHelper.formatTime(_seconds),
+                          );
 
                           if (counter == 0) {
                             Navigator.pushReplacementNamed(context, '/Home');
@@ -101,7 +129,6 @@ class _ExercisePageState extends State<ExercisePage> {
                             });
                           }
                         },
-
                         child: const Text(
                           'Stop',
                           style: TextStyle(fontSize: 20, color: Colors.white),

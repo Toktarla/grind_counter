@@ -9,6 +9,8 @@ import 'package:work_out_app/views/settings_page.dart';
 import 'package:work_out_app/views/stats_page.dart';
 import 'package:work_out_app/views/summary_page.dart';
 
+import '../views/feedback_page.dart';
+
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
@@ -25,9 +27,11 @@ class AppRoutes {
       case '/Stats':
         return _materialRoute(const StatsPage());
       case '/Settings':
-        return _materialRoute(const SettingsPage());
+        return _materialRoute(SettingsPage());
       case '/About':
         return _materialRoute(const AboutPage());
+      case '/Feedback':
+        return _materialRoute(const FeedbackPage());
       case '/Summary':
         final map = settings.arguments as Map<String,dynamic>;
         return _materialRoute(SummaryPage(workout: map['workout'], date: map['date'], counter: map['counter'], timeElapsed: map['timeElapsed'],));

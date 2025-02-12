@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:work_out_app/widgets/detail_card_widget.dart';
 import '../config/di/injection_container.dart';
-import '../data/repositories/progress_repository.dart';
+import '../repositories/progress_repository.dart';
 import '../utils/helpers/date_helper.dart';
 import '../widgets/progress_indicator_widget.dart';
 
