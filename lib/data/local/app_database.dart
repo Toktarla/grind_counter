@@ -6,7 +6,9 @@ import 'package:path/path.dart' as p;
 import 'package:work_out_app/data/local/schemes/goals.dart';
 import 'package:work_out_app/data/local/schemes/progress.dart';
 
+import '../../utils/data.dart' show exercises;
 part 'app_database.g.dart';
+
 
 @DriftDatabase(tables: [Goals, Progress])
 class AppDatabase extends _$AppDatabase {
@@ -24,15 +26,7 @@ class AppDatabase extends _$AppDatabase {
   Future<void> _initializeGoals() async {
     final existingGoals = await select(goals).get();
     if (existingGoals.isEmpty) {
-      const exerciseTypes = [
-        'Pull-ups',
-        'Push-ups',
-        'Plank',
-        'Abs',
-        'Walk/Run',
-        'Squats'
-      ];
-      for (final type in exerciseTypes) {
+      for (final type in exercises) {
         await into(goals).insert(
           GoalsCompanion.insert(
             exerciseType: type,
