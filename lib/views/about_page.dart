@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:work_out_app/config/variables.dart';
 import 'package:work_out_app/viewmodels/theme_provider.dart';
 
 import '../config/app_colors.dart';
+import '../utils/helpers/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -42,28 +44,18 @@ class AboutPage extends StatelessWidget {
             ),
             InkWell(
               onTap: () async {
-                final Uri url = Uri.parse('https://github.com/Toktarla');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
-                } else {
-                  throw 'Could not launch $url';
-                }
+                  UrlLauncher.launchUrlInBrowser(githubUrl);
               },
-              child: Text(
+              child: const Text(
                 'Github Profile',
                 style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 20),
               ),
             ),
             InkWell(
               onTap: () async {
-                final Uri url = Uri.parse('YOUR_PRIVACY_POLICY_URL');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
-                } else {
-                  throw 'Could not launch $url';
-                }
+                UrlLauncher.launchUrlInBrowser("Privacy_Url_Here");
               },
-              child: Text(
+              child: const Text(
                 'Privacy Policy',
                 style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 20),
               ),
@@ -86,7 +78,7 @@ class AboutPage extends StatelessWidget {
                     shape: const LinearBorder(),
                   ),
                   onPressed: () async {
-                    Navigator.pushNamed(context, '/Feedback');
+                    UrlLauncher.launchEmailUrl();
                   },
                   child: const Text(
                     'Send Feedback',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_out_app/components/drawer.dart';
 import 'package:work_out_app/config/app_colors.dart';
+import 'package:work_out_app/data/local/app_database.dart';
 import '../config/di/injection_container.dart';
 import '../repositories/progress_repository.dart';
 import '../utils/data.dart';

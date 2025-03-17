@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/di/injection_container.dart';
+import '../services/local_notification_service.dart';
+import '../utils/helpers/snackbar_helper.dart';
+import 'package:permission_handler/permission_handler.dart'; // Import permission_handler
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -57,6 +60,39 @@ class _SettingsPageState extends State<SettingsPage> {
               onChanged: _togglePlaySound,
               value: playSound,
             ),
+          ),
+          const SizedBox(height: 20,),
+          ListTile(
+            leading: const Icon(Icons.notifications),
+            title: const Text('Notification Settings'),
+            onTap: () async {
+              print(sl<SharedPreferences>().get('fcmToken'));
+              PermissionStatus status = await Permission.notification.request();
+              if (status.isGranted) {
+                TimeOfDay? selectedTime = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                  builder: (BuildContext context, Widget? child) {
+                    return MediaQuery(
+                      data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                      child: child!,
+                    );
+                  },
+                );
+
+                if (selectedTime != null) {
+                  LocalNotificationService.scheduleDailyMotivationalMessage(
+                    hour: selectedTime.hour,
+                    minute: selectedTime.minute,
+                  );
+                  SnackbarHelper.showSuccessSnackbar(message: 'Notification time was scheduled to ${selectedTime.format(context)}');
+                }
+              } else if (status.isDenied) {
+                await Permission.notification.request();
+              } else if (status.isPermanentlyDenied) {
+                openAppSettings();
+              }
+            },
           ),
         ],
       ),

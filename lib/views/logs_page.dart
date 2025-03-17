@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:work_out_app/data/local/app_database.dart';
 import 'package:work_out_app/utils/helpers/date_helper.dart';
+import 'package:work_out_app/utils/helpers/snackbar_helper.dart';
 import 'package:work_out_app/widgets/dropdown_button_widget.dart';
 import '../config/di/injection_container.dart';
 import '../repositories/progress_repository.dart';
 import '../utils/data.dart';
+import '../utils/dialogs/delete_confirmation_dialog.dart';
 
 class LogsPage extends StatefulWidget {
   const LogsPage({super.key});
@@ -32,7 +34,18 @@ class _LogsPageState extends State<LogsPage> {
         actions: [
           IconButton(
             onPressed: () {
-              progressRepository.deleteAllProgressRecords();
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return DeleteConfirmationDialog(
+                    onDelete: () {
+                      progressRepository.deleteAllProgressRecords();
+                      SnackbarHelper.showSuccessSnackbar(message: 'Progress records deleted');
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              );
             },
             icon: const Icon(Icons.delete),
           ),
@@ -95,7 +108,7 @@ class _LogsPageState extends State<LogsPage> {
                               children: [
                                 Column(
                                   children: [
-                                    Text(log.timeElapsed),
+                                    Text(DateHelper.formatTime(log.duration)),
                                     const Text('Duration'),
                                   ],
                                 ),
@@ -124,7 +137,7 @@ class _LogsPageState extends State<LogsPage> {
                                   icon: const Icon(Icons.delete),
                                   onPressed: () {
                                     progressRepository.deleteProgressRecord(log.id);
-                                    setState(() {}); // Refresh the UI
+                                    Navigator.pop(context);
                                   },
                                 ),
                               ],

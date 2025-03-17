@@ -96,7 +96,6 @@ class _GoalPageState extends State<GoalPage> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Card(
-                      color: AppColors.whiteColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -162,9 +161,7 @@ class _GoalPageState extends State<GoalPage> {
                   int monthly = int.tryParse(monthlyController.text) ?? 0;
                   int yearly = int.tryParse(yearlyController.text) ?? 0;
 
-                  await goalRepository.updateGoal(
-                      selectedExercise, daily, weekly, monthly, yearly
-                  );
+                  await goalRepository.updateGoal(selectedExercise, daily, weekly, monthly, yearly);
                 },
                 child: const Text(
                   'Save Goal',

@@ -21,6 +21,8 @@ class _ExercisePageState extends State<ExercisePage> {
   late Timer _timer;
   int _seconds = 0;
   bool playSound = false;
+  final progressRepository = sl<ProgressRepository>();
+  final prefs = sl<SharedPreferences>();
 
   @override
   void initState() {
@@ -34,6 +36,17 @@ class _ExercisePageState extends State<ExercisePage> {
     setState(() {
       playSound = prefs.getBool('playSound') ?? false;
     });
+  }
+
+  Future<void> _fetchWorkoutCount() async {
+    final progress = await progressRepository.getExerciseProgress(widget.exerciseType, DateTime.now());
+    int savedCount = prefs.getInt('today_workout_count') ?? 0;
+    if (progress > 0) {
+      savedCount++;
+      await prefs.setInt('today_workout_count', savedCount);
+    } else {
+      await prefs.setInt('today_workout_count', 1);
+    }
   }
 
   @override
@@ -111,10 +124,11 @@ class _ExercisePageState extends State<ExercisePage> {
                         ),
                         onPressed: () {
                           _timer.cancel();
+                          _fetchWorkoutCount();
                           sl<ProgressRepository>().addExerciseProgress(
                             widget.exerciseType,
                             counter,
-                            int.tryParse(DateHelper.formatTime(_seconds)) ?? 0,
+                            _seconds ?? 0,
                             DateHelper.formatTime(_seconds),
                           );
 

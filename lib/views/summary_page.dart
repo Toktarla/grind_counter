@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/widgets/detail_card_widget.dart';
 import '../config/di/injection_container.dart';
 import '../repositories/progress_repository.dart';
 import '../utils/helpers/date_helper.dart';
 import '../widgets/progress_indicator_widget.dart';
 
-class SummaryPage extends StatelessWidget {
+class SummaryPage extends StatefulWidget {
   final String workout;
   final String date;
   final int counter;
@@ -21,9 +22,25 @@ class SummaryPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final progressRepository = sl<ProgressRepository>();
+  State<SummaryPage> createState() => _SummaryPageState();
+}
 
+class _SummaryPageState extends State<SummaryPage> {
+
+  final progressRepository = sl<ProgressRepository>();
+  final prefs = sl<SharedPreferences>();
+  late int savedCount;
+
+  @override
+  void initState() {
+    super.initState();
+    savedCount = prefs.getInt('today_workout_count') ?? 0;
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Workout Summary'),
@@ -54,12 +71,12 @@ class SummaryPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Workout #$counter for Today',
+              'Workout #$savedCount for Today',
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              DateHelper.formatDate(date),
+              DateHelper.formatDate(widget.date),
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 24),
@@ -71,14 +88,14 @@ class SummaryPage extends StatelessWidget {
                     width: 140,
                     height: 140,
                     icon: FontAwesomeIcons.dumbbell,
-                    integerValue: counter.toString(),
-                    label: workout,
+                    integerValue: widget.counter.toString(),
+                    label: widget.workout,
                     color: Colors.blue),
                 DetailCard(
                     width: 140,
                     height: 140,
                     icon: FontAwesomeIcons.fire,
-                    integerValue: timeElapsed,
+                    integerValue: widget.timeElapsed,
                     label: 'Duration',
                     color: Colors.orange
                 ),
@@ -87,7 +104,7 @@ class SummaryPage extends StatelessWidget {
 
             const SizedBox(height: 24),
             FutureBuilder<Map<String, String>>(
-              future: progressRepository.getProgressAndGoalForExercise(workout),
+              future: progressRepository.getProgressAndGoalForExercise(widget.workout),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
