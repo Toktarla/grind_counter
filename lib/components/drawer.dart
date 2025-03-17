@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:work_out_app/utils/helpers/url_launcher.dart';
 import '../utils/data.dart';
 import '../viewmodels/theme_provider.dart';
 
@@ -50,11 +51,7 @@ class MyDrawer extends StatelessWidget {
           ListTile(
             title: const Text('Rate'),
             onTap: () async {
-              if (await canLaunchUrl(Uri.parse(appUrl))) {
-              await launchUrl(Uri.parse(appUrl), mode: LaunchMode.externalApplication);
-              } else {
-              debugPrint("Could not launch $appUrl");
-              }
+              UrlLauncher.launchUrlExternally(appUrl);
             },
           ),
           ListTile(

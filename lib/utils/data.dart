@@ -1,5 +1,5 @@
 const List<String> exercises = [
-  'Pull-ups', 'Push-ups', 'Plank', 'Abs', 'Walk/Run', 'Squats'
+  'Pull-ups', 'Push-ups', 'Abs', 'Squats'
 ];
 
 const String appLink = 'Check out this app called exercise $appUrl';

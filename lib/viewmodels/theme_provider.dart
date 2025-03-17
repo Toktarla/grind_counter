@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../config/app_colors.dart';
 import '../../../utils/animations/fade_in_transition.dart';
@@ -49,7 +48,11 @@ class ThemeProvider with ChangeNotifier {
     iconTheme: const IconThemeData(
       color: Colors.grey,
     ),
-    textTheme: GoogleFonts.nunitoTextTheme(),
+    textTheme: const TextTheme(
+      titleLarge: TextStyle(fontSize: 18, color: Colors.black, fontFamily: 'Nunito'),
+      titleMedium: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Nunito'),
+      displayLarge: TextStyle(fontSize: 24, color: Colors.black, fontFamily: 'Nunito', fontWeight: FontWeight.bold),
+    ),
     appBarTheme: const AppBarTheme(
       color: AppColors.cyanColor,
       elevation: 5,
@@ -57,7 +60,16 @@ class ThemeProvider with ChangeNotifier {
     primaryIconTheme: const IconThemeData(
       color: AppColors.blueAccentColor,
     ),
+    cardColor: AppColors.whiteColor,
     scaffoldBackgroundColor: Colors.white,
+    dialogTheme: DialogTheme(
+      backgroundColor: Colors.white,
+      contentTextStyle: const TextStyle(color: Colors.grey),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      )
+
+    ),
   );
 
   static final ThemeData _darkTheme = ThemeData(
@@ -67,7 +79,11 @@ class ThemeProvider with ChangeNotifier {
         TargetPlatform.iOS: FadePageTransitionsBuilder(),
       },
     ),
-    textTheme: GoogleFonts.nunitoTextTheme(),
+    textTheme: const TextTheme(
+      titleLarge: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Nunito'),
+      titleMedium: TextStyle(fontSize: 14, color: Colors.white, fontFamily: 'Nunito'),
+      displayLarge: TextStyle(fontSize: 24, color: Colors.white, fontFamily: 'Nunito', fontWeight: FontWeight.bold),
+    ),
     brightness: Brightness.dark,
     primaryColor: AppColors.blueColor,
     drawerTheme: const DrawerThemeData(
@@ -100,6 +116,8 @@ class ThemeProvider with ChangeNotifier {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
+      titleTextStyle: const TextStyle(color: Colors.white, ),
+      elevation: 0,
     ),
   );
 

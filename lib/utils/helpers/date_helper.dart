@@ -57,11 +57,24 @@ class DateHelper {
   }
 
   static String formatDateTime(DateTime dateTime) {
-    final month = _getMonthName(dateTime.month).substring(0, 3); // Short month name (e.g., "Jan")
+    final month = _getMonthName(dateTime.month).substring(0, 3);
     final day = dateTime.day;
     final year = dateTime.year;
-    final hour = dateTime.hour.toString().padLeft(2, '0');
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    return '$month $day, $year, $hour:$minute';
+    return '$month $day, $year';
+  }
+
+  // New method to format a DateTime to "Month day" (e.g., "March 12")
+  static String formatMonthDay(DateTime dateTime) {
+    return DateFormat('MMMM d').format(dateTime);
+  }
+
+  // New method to format a DateTime to "Month day, year" (e.g., "March 12, 2024")
+  static String formatMonthDayYear(DateTime dateTime) {
+    return DateFormat('MMMM d, yyyy').format(dateTime);
+  }
+
+  //New method to format a DateTime to "Month year" (e.g. March 2024)
+  static String formatMonthYear(DateTime dateTime){
+    return DateFormat('MMMM yyyy').format(dateTime);
   }
 }
