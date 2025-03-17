@@ -74,31 +74,31 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> addExerciseProgress(String exerciseType, int count, int duration, String timeElapsed) async {
-    final today = DateTime.now();
-    final startOfDay = DateTime(today.year, today.month, today.day);
+    final now = DateTime.now();
 
     final existingProgress = await (select(progress)
       ..where((tbl) =>
-      tbl.exerciseType.equals(exerciseType) & tbl.timestamp.equals(startOfDay)))
+      tbl.exerciseType.equals(exerciseType) & tbl.timestamp.equals(now)))
         .getSingleOrNull();
 
     if (existingProgress != null) {
       await (update(progress)
-        ..where((tbl) => tbl.exerciseType.equals(exerciseType) & tbl.timestamp.equals(startOfDay)))
+        ..where((tbl) => tbl.exerciseType.equals(exerciseType) & tbl.timestamp.equals(now)))
           .write(ProgressCompanion(
-        count: Value(existingProgress.count + count),
-        duration: Value(existingProgress.duration + duration),
-        timeElapsed: Value(timeElapsed)
+          count: Value(existingProgress.count + count),
+          duration: Value(existingProgress.duration + duration),
+          timeElapsed: Value(timeElapsed),
+          tries: Value(existingProgress.tries + 1)
       ));
     } else {
-      // Insert new progress for the day
       await into(progress).insert(
         ProgressCompanion.insert(
-          exerciseType: exerciseType,
-          count: count,
-          duration: duration,
-          timestamp: startOfDay,
-          timeElapsed: timeElapsed
+            exerciseType: exerciseType,
+            count: count,
+            duration: duration,
+            timestamp: now,
+            timeElapsed: timeElapsed,
+            tries: const Value(1) // Initialize tries to 1
         ),
       );
     }
