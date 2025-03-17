@@ -7,4 +7,5 @@ class Progress extends Table {
   IntColumn get count => integer()();
   IntColumn get duration => integer()();
   DateTimeColumn get timestamp => dateTime()();
+  IntColumn get tries => integer().withDefault(const Constant(1))(); // Add tries column
 }

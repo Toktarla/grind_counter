@@ -27,9 +27,9 @@ class ProgressIndicatorWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(label, style: const TextStyle(fontSize: 18)),
+            Text(label, style: Theme.of(context).textTheme.titleLarge),
             const Spacer(),
-            Text(progress, style: const TextStyle(fontSize: 14)),
+            Text(progress, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
         const SizedBox(height: 4),
