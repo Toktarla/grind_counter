@@ -1,0 +1,2 @@
+C:/Users/Toktarla/StudioProjects/work_out_app/android/app/.cxx/RelWithDebInfo/176z6ba5/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/Toktarla/StudioProjects/work_out_app/android/app/.cxx/RelWithDebInfo/176z6ba5/arm64-v8a/CMakeFiles/rebuild_cache.dir
