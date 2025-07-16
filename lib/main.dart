@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/config/routes.dart';
+import 'package:work_out_app/providers/exercise_type_provider.dart';
 import 'package:work_out_app/providers/theme_provider.dart';
 import 'package:work_out_app/services/local_notification_service.dart';
 import 'package:work_out_app/utils/helpers/crashlytics.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<ExerciseTypeProvider>(create: (_) => sl()),
         ChangeNotifierProvider<ThemeProvider>(create: (_) => sl()),
       ],
       child: Consumer<ThemeProvider>(

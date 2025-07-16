@@ -3,6 +3,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/data/local/app_database.dart';
+import 'package:work_out_app/providers/exercise_type_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../repositories/goal_repository.dart';
 import '../../repositories/progress_repository.dart';
@@ -23,4 +24,5 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<GoalRepository>(() => GoalRepository(sl()));
 
   sl.registerFactory<ThemeProvider>(() => ThemeProvider(sl()));
+  sl.registerFactory<ExerciseTypeProvider>(() => ExerciseTypeProvider());
 }

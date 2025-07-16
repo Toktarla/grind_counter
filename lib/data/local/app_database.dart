@@ -270,10 +270,10 @@ class AppDatabase extends _$AppDatabase {
     final type = await (select(exerciseTypes)
           ..where((tbl) => tbl.id.equals(id)))
         .getSingleOrNull();
-    if (type != null && !(type.isDefault)) {
+    if (type != null) {
       await (delete(exerciseTypes)..where((tbl) => tbl.id.equals(id))).go();
     } else {
-      throw Exception('Cannot delete default exercise type');
+      throw Exception('Cannot delete this exercise type');
     }
   }
 }

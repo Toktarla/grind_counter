@@ -182,7 +182,7 @@ class _StatsPageState extends State<StatsPage> with TickerProviderStateMixin {
             children: [
               TabBar(
                 labelStyle: Theme.of(context).textTheme.titleLarge,
-                indicatorColor: Theme.of(context).hintColor,
+                indicatorColor: Theme.of(context).scaffoldBackgroundColor,
                 controller: _tabController,
                 tabs: const [
                   Tab(text: 'Day'),

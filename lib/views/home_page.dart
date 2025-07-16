@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/config/app_colors.dart';
 import '../components/drawer.dart';
 import '../config/di/injection_container.dart';
 import '../models/level_data.dart';
+import '../providers/exercise_type_provider.dart';
 import '../repositories/progress_repository.dart';
 import '../services/ranking_service.dart';
 import '../utils/painters/regular_hexagon_painter.dart';
@@ -40,21 +42,27 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadInitialExerciseType() async {
-    final db = sl<AppDatabase>();
-    final types = await db.getAllExerciseTypes();
-    setState(() {
-      _exerciseTypes = types.map((e) => e.name).toList();
-      if (_exerciseTypes.isNotEmpty) {
-        selectedExercise = _exerciseTypes.first;
-      }
-    });
+    final types = context.read<ExerciseTypeProvider>().exerciseTypes;
+    if (types.isNotEmpty) {
+      setState(() {
+        selectedExercise = types.first.name;
+      });
+    }
   }
 
   Future<void> _loadSelectedExercise() async {
     final prefs = sl<SharedPreferences>();
-    setState(() {
-      selectedExercise = prefs.getString('selectedExercise') ?? 'Push-ups';
-    });
+    final saved = prefs.getString('selectedExercise');
+    final provider = context.read<ExerciseTypeProvider>();
+    if (saved != null && provider.exerciseTypes.any((e) => e.name == saved)) {
+      setState(() {
+        selectedExercise = saved;
+      });
+    } else if (provider.exerciseTypes.isNotEmpty) {
+      setState(() {
+        selectedExercise = provider.exerciseTypes.first.name;
+      });
+    }
   }
 
   Future<void> _saveSelectedExercise(String exercise) async {
