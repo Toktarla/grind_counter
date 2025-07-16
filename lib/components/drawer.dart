@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:work_out_app/services/ranking_service.dart';
-import 'package:work_out_app/utils/helpers/snackbar_helper.dart';
-import 'package:work_out_app/utils/helpers/url_launcher.dart';
 import '../data/data.dart';
 import '../providers/theme_provider.dart';
 

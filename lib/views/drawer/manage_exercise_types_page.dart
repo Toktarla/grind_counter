@@ -172,37 +172,4 @@ class _ManageExerciseTypesPageState extends State<ManageExerciseTypesPage> {
       ),
     );
   }
-
-  Widget _buildExerciseTypeDialog({
-    required String title,
-    required TextEditingController controller,
-    required VoidCallback onSave,
-  }) {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return AlertDialog(
-          title: Text(title),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: controller,
-                decoration: const InputDecoration(labelText: 'Exercise Name'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: onSave,
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
