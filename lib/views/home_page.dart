@@ -110,19 +110,19 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bar_chart_sharp),
+            icon: const Icon(Icons.bar_chart_sharp, color: Colors.orange),
             onPressed: () {
               Navigator.pushNamed(context, '/Stats');
             },
           ),
           IconButton(
-            icon: const Icon(Icons.library_books_outlined),
+            icon: const Icon(Icons.library_books_outlined, color: Colors.green),
             onPressed: () {
               Navigator.pushNamed(context, '/Logs');
             },
           ),
           IconButton(
-            icon: const Icon(Icons.fitness_center),
+            icon: const Icon(Icons.fitness_center, color: Colors.blue),
             onPressed: () {
               Navigator.pushNamed(context, '/ManageExerciseTypes');
             },
@@ -130,106 +130,108 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       drawer: const SafeArea(child: MyDrawer()),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              const SizedBox(height: 20,),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  LinearProgressIndicator(
-                    value: _levelProgress,
-                    minHeight: 15,
-                    backgroundColor: levelData.color.withValues(alpha: 0.55),
-                    valueColor: AlwaysStoppedAnimation<Color>(levelData.color),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("LVL: $_userLevel", style: const TextStyle(color: Colors.black)),
-                      Text("LVL: ${_userLevel + 1}", style: const TextStyle(color: Colors.black)),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              CustomPaint(
-                painter: NearRegularHexagonPainter(levelData.color),
-                child: SizedBox(
-                  width: 150,
-                  height: 150,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                const SizedBox(height: 20,),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    LinearProgressIndicator(
+                      value: _levelProgress,
+                      minHeight: 15,
+                      backgroundColor: levelData.color.withValues(alpha: 0.55),
+                      valueColor: AlwaysStoppedAnimation<Color>(levelData.color),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "RANK",
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),
-                        Text(
-                          _userLevel.toString(),
-                          style: const TextStyle(fontSize: 36, color: Colors.white),
-                        ),
+                        Text("LVL: $_userLevel", style: const TextStyle(color: Colors.black)),
+                        Text("LVL: ${_userLevel + 1}", style: const TextStyle(color: Colors.black)),
                       ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                CustomPaint(
+                  painter: NearRegularHexagonPainter(levelData.color),
+                  child: SizedBox(
+                    width: 150,
+                    height: 150,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "RANK",
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                          Text(
+                            _userLevel.toString(),
+                            style: const TextStyle(fontSize: 36, color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                levelData.title,
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/Exercise',
-                      arguments: {'exerciseType': selectedExercise});
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  backgroundColor: AppColors.pinkColor,
-                  padding: const EdgeInsets.all(80),
+                const SizedBox(height: 5),
+                Text(
+                  levelData.title,
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
-                child: const Text('Start',
-                    style: TextStyle(
-                        color: AppColors.blueAccentColor, fontSize: 30)),
-              ),
-              const SizedBox(height: 24),
-              FutureBuilder<Map<String, String>>(
-                future: progressRepository
-                    .getProgressAndGoalForExercise(selectedExercise),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return const Text('Error loading progress');
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Text('No progress data available');
-                  } else {
-                    final progress = snapshot.data!;
-                    return Column(
-                      children: [
-                        ProgressIndicatorWidget(
-                            label: 'Today', progress: progress['daily'] ?? '0/0'),
-                        const SizedBox(height: 16),
-                        ProgressIndicatorWidget(
-                            label: 'Week', progress: progress['weekly'] ?? '0/0'),
-                        const SizedBox(height: 16),
-                        ProgressIndicatorWidget(
-                            label: 'Month',
-                            progress: progress['monthly'] ?? '0/0'),
-                        const SizedBox(height: 16),
-                        ProgressIndicatorWidget(
-                            label: 'Year', progress: progress['yearly'] ?? '0/0'),
-                      ],
-                    );
-                  }
-                },
-              ),
-            ],
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/Exercise',
+                        arguments: {'exerciseType': selectedExercise});
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    backgroundColor: AppColors.pinkColor,
+                    padding: const EdgeInsets.all(80),
+                  ),
+                  child: const Text('Start',
+                      style: TextStyle(
+                          color: AppColors.blueAccentColor, fontSize: 30)),
+                ),
+                const SizedBox(height: 24),
+                FutureBuilder<Map<String, String>>(
+                  future: progressRepository
+                      .getProgressAndGoalForExercise(selectedExercise),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return const Text('Error loading progress');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Text('No progress data available');
+                    } else {
+                      final progress = snapshot.data!;
+                      return Column(
+                        children: [
+                          ProgressIndicatorWidget(
+                              label: 'Today', progress: progress['daily'] ?? '0/0'),
+                          const SizedBox(height: 16),
+                          ProgressIndicatorWidget(
+                              label: 'Week', progress: progress['weekly'] ?? '0/0'),
+                          const SizedBox(height: 16),
+                          ProgressIndicatorWidget(
+                              label: 'Month',
+                              progress: progress['monthly'] ?? '0/0'),
+                          const SizedBox(height: 16),
+                          ProgressIndicatorWidget(
+                              label: 'Year', progress: progress['yearly'] ?? '0/0'),
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
