@@ -4,6 +4,10 @@ import '../data/data.dart';
 import '../models/level_data.dart';
 
 class RankingService {
+  RankingService();
+  
+  static final sharedPreferences = sl<SharedPreferences>();
+  
   static List<LevelData> generateLevels() {
     List<LevelData> levels = [];
 
@@ -30,12 +34,12 @@ class RankingService {
   }
 
   static Future<int> getCurrentUserLevel() async {
-    final prefs = sl<SharedPreferences>();
+    final prefs = sharedPreferences;
     return prefs.getInt('userLevel') ?? 1;
   }
 
   static Future<void> updateUserLevel(int newLevel) async {
-    final prefs = sl<SharedPreferences>();
+    final prefs = sharedPreferences;
     await prefs.setInt('userLevel', newLevel);
   }
 
@@ -54,7 +58,7 @@ class RankingService {
   }
 
   static Future<void> addProgress(int points) async {
-    final prefs = sl<SharedPreferences>();
+    final prefs = sharedPreferences;
     int currentProgress = prefs.getInt('userProgress') ?? 0;
     int currentLevel = await getCurrentUserLevel();
     int requiredPoints = 50;
@@ -75,11 +79,16 @@ class RankingService {
   }
 
   static Future<double> getUserLevelProgress() async {
-    final prefs = sl<SharedPreferences>();
+    final prefs = sharedPreferences;
     int currentProgress = prefs.getInt('userProgress') ?? 0;
     int requiredPoints = 50;
 
     if (currentProgress == 0) return 0.0;
     return currentProgress / requiredPoints;
+  }
+
+  static Future<void> resetUserLevelProgress() async {
+    final prefs = sharedPreferences;
+    await prefs.setInt('userLevel', 1);
   }
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:work_out_app/config/variables.dart';
-import 'package:work_out_app/viewmodels/theme_provider.dart';
-
-import '../config/app_colors.dart';
-import '../utils/helpers/url_launcher.dart';
+import '../../config/app_colors.dart';
+import '../../providers/theme_provider.dart';
+import '../../utils/helpers/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});

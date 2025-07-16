@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:work_out_app/utils/error/error_page.dart';
-import 'package:work_out_app/views/about_page.dart';
+import 'package:work_out_app/views/drawer/about_page.dart';
 import 'package:work_out_app/views/exercise_page.dart';
 import 'package:work_out_app/views/goal_page.dart';
 import 'package:work_out_app/views/home_page.dart';
 import 'package:work_out_app/views/logs_page.dart';
-import 'package:work_out_app/views/settings_page.dart';
+import 'package:work_out_app/views/drawer/settings_page.dart';
 import 'package:work_out_app/views/stats_page.dart';
 import 'package:work_out_app/views/summary_page.dart';
-
-import '../views/feedback_page.dart';
-
+import 'package:work_out_app/views/drawer/manage_exercise_types_page.dart';
+import '../views/drawer/feedback_page.dart';
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
@@ -27,7 +26,7 @@ class AppRoutes {
       case '/Stats':
         return _materialRoute(const StatsPage());
       case '/Settings':
-        return _materialRoute(SettingsPage());
+        return _materialRoute(const SettingsPage());
       case '/About':
         return _materialRoute(const AboutPage());
       case '/Feedback':
@@ -35,6 +34,8 @@ class AppRoutes {
       case '/Summary':
         final map = settings.arguments as Map<String,dynamic>;
         return _materialRoute(SummaryPage(workout: map['workout'], date: map['date'], counter: map['counter'], timeElapsed: map['timeElapsed'],));
+      case '/ManageExerciseTypes':
+        return _materialRoute(const ManageExerciseTypesPage());
       default:
         return _materialRoute(const ErrorPage());
     }

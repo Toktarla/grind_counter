@@ -7,7 +7,7 @@ class SnackbarHelper {
     required String message,
     Duration duration = const Duration(seconds: 1),
     SnackBarAction? action,
-    Color backgroundColor = Colors.black,
+    Color backgroundColor = Colors.white,
   }) {
     scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../config/di/injection_container.dart';
-import '../services/local_notification_service.dart';
-import '../utils/helpers/snackbar_helper.dart';
+import '../../config/di/injection_container.dart';
+import '../../services/local_notification_service.dart';
+import '../../utils/helpers/snackbar_helper.dart';
 import 'package:permission_handler/permission_handler.dart'; // Import permission_handler
 
 class SettingsPage extends StatefulWidget {
@@ -40,7 +40,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(fontSize: 20, color: Colors.white)),
+        title: const Text('Settings'),
         actions: [
           IconButton(
             onPressed: () {
@@ -66,7 +66,6 @@ class _SettingsPageState extends State<SettingsPage> {
             leading: const Icon(Icons.notifications),
             title: const Text('Notification Settings'),
             onTap: () async {
-              print(sl<SharedPreferences>().get('fcmToken'));
               PermissionStatus status = await Permission.notification.request();
               if (status.isGranted) {
                 TimeOfDay? selectedTime = await showTimePicker(

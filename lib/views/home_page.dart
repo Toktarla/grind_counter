@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/config/app_colors.dart';
 import '../components/drawer.dart';
@@ -8,10 +7,10 @@ import '../config/di/injection_container.dart';
 import '../models/level_data.dart';
 import '../repositories/progress_repository.dart';
 import '../services/ranking_service.dart';
-import '../utils/helpers/date_helper.dart';
 import '../utils/painters/regular_hexagon_painter.dart';
 import '../widgets/dropdown_button_widget.dart';
 import '../widgets/progress_indicator_widget.dart';
+import 'package:work_out_app/data/local/app_database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,27 +20,53 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String selectedExercise = 'Push-ups';
+  String selectedExercise = '';
   final progressRepository = sl<ProgressRepository>();
   int _userLevel = 1;
+  List<String> _exerciseTypes = [];
   late LevelData levelData;
-  double _levelProgress = 0.0; // Added level progress
-  late LevelData _nextLevelData;
+  double _levelProgress = 0.0;
+  late LevelData nextLevelData;
 
   @override
   void initState() {
     super.initState();
+    _loadInitialExerciseType();
     _loadLevel();
     levelData = RankingService.getLevelData(_userLevel);
-    _nextLevelData = RankingService.getLevelData(_userLevel + 1);
-    _loadProgress(); // Load progress on init
+    nextLevelData = RankingService.getLevelData(_userLevel + 1);
+    _loadProgress();
+    _loadSelectedExercise();
+  }
+
+  Future<void> _loadInitialExerciseType() async {
+    final db = sl<AppDatabase>();
+    final types = await db.getAllExerciseTypes();
+    setState(() {
+      _exerciseTypes = types.map((e) => e.name).toList();
+      if (_exerciseTypes.isNotEmpty) {
+        selectedExercise = _exerciseTypes.first;
+      }
+    });
+  }
+
+  Future<void> _loadSelectedExercise() async {
+    final prefs = sl<SharedPreferences>();
+    setState(() {
+      selectedExercise = prefs.getString('selectedExercise') ?? 'Push-ups';
+    });
+  }
+
+  Future<void> _saveSelectedExercise(String exercise) async {
+    final prefs = sl<SharedPreferences>();
+    await prefs.setString('selectedExercise', exercise);
   }
 
   Future<void> _loadLevel() async {
     _userLevel = await RankingService.getCurrentUserLevel();
     setState(() {
       levelData = RankingService.getLevelData(_userLevel);
-      _nextLevelData = RankingService.getLevelData(_userLevel + 1);
+      nextLevelData = RankingService.getLevelData(_userLevel + 1);
     });
   }
 
@@ -61,6 +86,7 @@ class _HomePageState extends State<HomePage> {
               setState(() {
                 selectedExercise = value;
               });
+              await _saveSelectedExercise(value);
             }
           },
         ),
@@ -76,12 +102,6 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.gamepad),
-            onPressed: () {
-              Navigator.pushNamed(context, '/Game');
-            },
-          ),
-          IconButton(
             icon: const Icon(Icons.bar_chart_sharp),
             onPressed: () {
               Navigator.pushNamed(context, '/Stats');
@@ -91,6 +111,12 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.library_books_outlined),
             onPressed: () {
               Navigator.pushNamed(context, '/Logs');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.fitness_center),
+            onPressed: () {
+              Navigator.pushNamed(context, '/ManageExerciseTypes');
             },
           ),
         ],
@@ -114,8 +140,8 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("LVL: $_userLevel", style: TextStyle(color: Colors.black)),
-                      Text("LVL: ${_userLevel + 1}", style: TextStyle(color: Colors.black)),
+                      Text("LVL: $_userLevel", style: const TextStyle(color: Colors.black)),
+                      Text("LVL: ${_userLevel + 1}", style: const TextStyle(color: Colors.black)),
                     ],
                   ),
                 ],

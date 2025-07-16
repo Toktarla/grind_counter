@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:work_out_app/data/local/app_database.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../config/di/injection_container.dart';
@@ -11,16 +10,16 @@ import '../widgets/detail_card_widget.dart';
 
 class StatsPage extends StatefulWidget {
 
-  const StatsPage({Key? key}) : super(key: key);
+  const StatsPage({super.key});
 
   @override
-  _StatsPageState createState() => _StatsPageState();
+  State<StatsPage> createState() => _StatsPageState();
 }
 
 class _StatsPageState extends State<StatsPage> with TickerProviderStateMixin {
   final database = sl<AppDatabase>();
   late TabController _tabController;
-  String _selectedExercise = 'Push-ups'; // Default exercise
+  String _selectedExercise = '';
   List<String> _exerciseTypes = [];
   DateTime _currentDate = DateTime.now();
   DateTime _currentWeekStart = DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
@@ -34,6 +33,18 @@ class _StatsPageState extends State<StatsPage> with TickerProviderStateMixin {
     _loadExerciseTypes();
   }
 
+  void _onShareButtonPressed() async {
+    final data = await _getMonthChartData();
+
+    int totalExercises = 0;
+    for (final record in data) {
+      totalExercises += record.count;
+    }
+
+    String message = 'I did $totalExercises exercises in the last month!';
+
+    Share.share(message);
+  }
 
   Future<void> _showDatePickerDialog(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -54,9 +65,9 @@ class _StatsPageState extends State<StatsPage> with TickerProviderStateMixin {
   }
 
   Future<void> _loadExerciseTypes() async {
-    final goals = await database.getAllGoals();
+    final types = await database.getAllExerciseTypes();
     setState(() {
-      _exerciseTypes = goals.map((goal) => goal.exerciseType).toList();
+      _exerciseTypes = types.map((e) => e.name).toList();
       if (!_exerciseTypes.contains(_selectedExercise) && _exerciseTypes.isNotEmpty) {
         _selectedExercise = _exerciseTypes.first;
       }
@@ -162,9 +173,7 @@ class _StatsPageState extends State<StatsPage> with TickerProviderStateMixin {
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
-            onPressed: () {
-              // Share stats
-            },
+            onPressed: _onShareButtonPressed,
           )
         ],
         bottom: PreferredSize(
@@ -172,22 +181,25 @@ class _StatsPageState extends State<StatsPage> with TickerProviderStateMixin {
           child: Column(
             children: [
               TabBar(
+                labelStyle: Theme.of(context).textTheme.titleLarge,
+                indicatorColor: Theme.of(context).hintColor,
                 controller: _tabController,
                 tabs: const [
                   Tab(text: 'Day'),
                   Tab(text: 'Week'),
                   Tab(text: 'Month'),
-                  Tab(text: 'Year'), // Add month and year tabs
+                  Tab(text: 'Year'),
                 ],
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: DropdownButton<String>(
+                  dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                   value: _selectedExercise,
                   items: _exerciseTypes.map((type) {
                     return DropdownMenuItem<String>(
                       value: type,
-                      child: Text(type),
+                      child: Text(type, style: Theme.of(context).textTheme.titleLarge),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -302,7 +314,7 @@ class _StatsPageState extends State<StatsPage> with TickerProviderStateMixin {
                       DetailCard(
                         width: 140,
                         height: 140,
-                        icon: FontAwesomeIcons.dumbbell,
+                        icon: Icons.fitness_center_sharp,
                         integerValue: totalCount.toString(),
                         label: 'Workout Count',
                         color: Colors.pinkAccent,

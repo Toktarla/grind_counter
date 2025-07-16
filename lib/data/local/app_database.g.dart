@@ -701,16 +701,320 @@ class ProgressCompanion extends UpdateCompanion<ProgressData> {
   }
 }
 
+class $ExerciseTypesTable extends ExerciseTypes
+    with TableInfo<$ExerciseTypesTable, ExerciseType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExerciseTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _iconMeta = const VerificationMeta('icon');
+  @override
+  late final GeneratedColumn<String> icon = GeneratedColumn<String>(
+      'icon', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _isDefaultMeta =
+      const VerificationMeta('isDefault');
+  @override
+  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+      'is_default', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_default" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns => [id, name, icon, createdAt, isDefault];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exercise_types';
+  @override
+  VerificationContext validateIntegrity(Insertable<ExerciseType> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('icon')) {
+      context.handle(
+          _iconMeta, icon.isAcceptableOrUnknown(data['icon']!, _iconMeta));
+    } else if (isInserting) {
+      context.missing(_iconMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('is_default')) {
+      context.handle(_isDefaultMeta,
+          isDefault.isAcceptableOrUnknown(data['is_default']!, _isDefaultMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExerciseType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExerciseType(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      icon: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}icon'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      isDefault: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_default'])!,
+    );
+  }
+
+  @override
+  $ExerciseTypesTable createAlias(String alias) {
+    return $ExerciseTypesTable(attachedDatabase, alias);
+  }
+}
+
+class ExerciseType extends DataClass implements Insertable<ExerciseType> {
+  final int id;
+  final String name;
+  final String icon;
+  final DateTime createdAt;
+  final bool isDefault;
+  const ExerciseType(
+      {required this.id,
+      required this.name,
+      required this.icon,
+      required this.createdAt,
+      required this.isDefault});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['icon'] = Variable<String>(icon);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['is_default'] = Variable<bool>(isDefault);
+    return map;
+  }
+
+  ExerciseTypesCompanion toCompanion(bool nullToAbsent) {
+    return ExerciseTypesCompanion(
+      id: Value(id),
+      name: Value(name),
+      icon: Value(icon),
+      createdAt: Value(createdAt),
+      isDefault: Value(isDefault),
+    );
+  }
+
+  factory ExerciseType.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExerciseType(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      icon: serializer.fromJson<String>(json['icon']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      isDefault: serializer.fromJson<bool>(json['isDefault']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'icon': serializer.toJson<String>(icon),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'isDefault': serializer.toJson<bool>(isDefault),
+    };
+  }
+
+  ExerciseType copyWith(
+          {int? id,
+          String? name,
+          String? icon,
+          DateTime? createdAt,
+          bool? isDefault}) =>
+      ExerciseType(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        icon: icon ?? this.icon,
+        createdAt: createdAt ?? this.createdAt,
+        isDefault: isDefault ?? this.isDefault,
+      );
+  ExerciseType copyWithCompanion(ExerciseTypesCompanion data) {
+    return ExerciseType(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      icon: data.icon.present ? data.icon.value : this.icon,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExerciseType(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('icon: $icon, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('isDefault: $isDefault')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, icon, createdAt, isDefault);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExerciseType &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.icon == this.icon &&
+          other.createdAt == this.createdAt &&
+          other.isDefault == this.isDefault);
+}
+
+class ExerciseTypesCompanion extends UpdateCompanion<ExerciseType> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> icon;
+  final Value<DateTime> createdAt;
+  final Value<bool> isDefault;
+  const ExerciseTypesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.isDefault = const Value.absent(),
+  });
+  ExerciseTypesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required String icon,
+    this.createdAt = const Value.absent(),
+    this.isDefault = const Value.absent(),
+  })  : name = Value(name),
+        icon = Value(icon);
+  static Insertable<ExerciseType> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? icon,
+    Expression<DateTime>? createdAt,
+    Expression<bool>? isDefault,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (icon != null) 'icon': icon,
+      if (createdAt != null) 'created_at': createdAt,
+      if (isDefault != null) 'is_default': isDefault,
+    });
+  }
+
+  ExerciseTypesCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String>? icon,
+      Value<DateTime>? createdAt,
+      Value<bool>? isDefault}) {
+    return ExerciseTypesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      icon: icon ?? this.icon,
+      createdAt: createdAt ?? this.createdAt,
+      isDefault: isDefault ?? this.isDefault,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (icon.present) {
+      map['icon'] = Variable<String>(icon.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (isDefault.present) {
+      map['is_default'] = Variable<bool>(isDefault.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExerciseTypesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('icon: $icon, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('isDefault: $isDefault')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $GoalsTable goals = $GoalsTable(this);
   late final $ProgressTable progress = $ProgressTable(this);
+  late final $ExerciseTypesTable exerciseTypes = $ExerciseTypesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [goals, progress];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [goals, progress, exerciseTypes];
 }
 
 typedef $$GoalsTableCreateCompanionBuilder = GoalsCompanion Function({
@@ -1068,6 +1372,173 @@ typedef $$ProgressTableProcessedTableManager = ProcessedTableManager<
     (ProgressData, BaseReferences<_$AppDatabase, $ProgressTable, ProgressData>),
     ProgressData,
     PrefetchHooks Function()>;
+typedef $$ExerciseTypesTableCreateCompanionBuilder = ExerciseTypesCompanion
+    Function({
+  Value<int> id,
+  required String name,
+  required String icon,
+  Value<DateTime> createdAt,
+  Value<bool> isDefault,
+});
+typedef $$ExerciseTypesTableUpdateCompanionBuilder = ExerciseTypesCompanion
+    Function({
+  Value<int> id,
+  Value<String> name,
+  Value<String> icon,
+  Value<DateTime> createdAt,
+  Value<bool> isDefault,
+});
+
+class $$ExerciseTypesTableFilterComposer
+    extends Composer<_$AppDatabase, $ExerciseTypesTable> {
+  $$ExerciseTypesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get icon => $composableBuilder(
+      column: $table.icon, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDefault => $composableBuilder(
+      column: $table.isDefault, builder: (column) => ColumnFilters(column));
+}
+
+class $$ExerciseTypesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExerciseTypesTable> {
+  $$ExerciseTypesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get icon => $composableBuilder(
+      column: $table.icon, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDefault => $composableBuilder(
+      column: $table.isDefault, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ExerciseTypesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExerciseTypesTable> {
+  $$ExerciseTypesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get icon =>
+      $composableBuilder(column: $table.icon, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDefault =>
+      $composableBuilder(column: $table.isDefault, builder: (column) => column);
+}
+
+class $$ExerciseTypesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ExerciseTypesTable,
+    ExerciseType,
+    $$ExerciseTypesTableFilterComposer,
+    $$ExerciseTypesTableOrderingComposer,
+    $$ExerciseTypesTableAnnotationComposer,
+    $$ExerciseTypesTableCreateCompanionBuilder,
+    $$ExerciseTypesTableUpdateCompanionBuilder,
+    (
+      ExerciseType,
+      BaseReferences<_$AppDatabase, $ExerciseTypesTable, ExerciseType>
+    ),
+    ExerciseType,
+    PrefetchHooks Function()> {
+  $$ExerciseTypesTableTableManager(_$AppDatabase db, $ExerciseTypesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExerciseTypesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExerciseTypesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExerciseTypesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> icon = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<bool> isDefault = const Value.absent(),
+          }) =>
+              ExerciseTypesCompanion(
+            id: id,
+            name: name,
+            icon: icon,
+            createdAt: createdAt,
+            isDefault: isDefault,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            required String icon,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<bool> isDefault = const Value.absent(),
+          }) =>
+              ExerciseTypesCompanion.insert(
+            id: id,
+            name: name,
+            icon: icon,
+            createdAt: createdAt,
+            isDefault: isDefault,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ExerciseTypesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ExerciseTypesTable,
+    ExerciseType,
+    $$ExerciseTypesTableFilterComposer,
+    $$ExerciseTypesTableOrderingComposer,
+    $$ExerciseTypesTableAnnotationComposer,
+    $$ExerciseTypesTableCreateCompanionBuilder,
+    $$ExerciseTypesTableUpdateCompanionBuilder,
+    (
+      ExerciseType,
+      BaseReferences<_$AppDatabase, $ExerciseTypesTable, ExerciseType>
+    ),
+    ExerciseType,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1076,4 +1547,6 @@ class $AppDatabaseManager {
       $$GoalsTableTableManager(_db, _db.goals);
   $$ProgressTableTableManager get progress =>
       $$ProgressTableTableManager(_db, _db.progress);
+  $$ExerciseTypesTableTableManager get exerciseTypes =>
+      $$ExerciseTypesTableTableManager(_db, _db.exerciseTypes);
 }

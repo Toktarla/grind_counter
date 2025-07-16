@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:work_out_app/services/ranking_service.dart';
+import 'package:work_out_app/utils/helpers/snackbar_helper.dart';
 import 'package:work_out_app/utils/helpers/url_launcher.dart';
-import '../utils/data.dart';
-import '../viewmodels/theme_provider.dart';
+import '../data/data.dart';
+import '../providers/theme_provider.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -33,8 +34,17 @@ class MyDrawer extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            title: const Text('Remove Ads'),
-            onTap: () {},
+            title: const Text('Set Goals'),
+            onTap: () {
+              Navigator.pushNamed(context, '/Goal');
+            },
+          ),
+          ListTile(
+            title: const Text('Reset Ranking Progress'),
+            onTap: () {
+                RankingService.resetUserLevelProgress();
+                Navigator.pushNamed(context, '/Home');
+            },
           ),
           ListTile(
             title: const Text('Send Feedback'),
@@ -48,18 +58,12 @@ class MyDrawer extends StatelessWidget {
               Share.share(appLink);
             },
           ),
-          ListTile(
-            title: const Text('Rate'),
-            onTap: () async {
-              UrlLauncher.launchUrlExternally(appUrl);
-            },
-          ),
-          ListTile(
-            title: const Text('About'),
-            onTap: () {
-              Navigator.pushNamed(context, '/About');
-            },
-          ),
+          // ListTile(
+          //   title: const Text('Rate'),
+          //   onTap: () async {
+          //     UrlLauncher.launchUrlExternally(appUrl);
+          //   },
+          // ),
         ],
       ),
     );

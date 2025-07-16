@@ -1,7 +1,8 @@
   import 'package:flutter/material.dart';
   import 'package:url_launcher/url_launcher.dart';
 
-import '../config/variables.dart';
+import '../../config/variables.dart';
+import '../../utils/helpers/snackbar_helper.dart';
 
 
   class FeedbackPage extends StatefulWidget {
@@ -29,9 +30,7 @@ import '../config/variables.dart';
       String feedback = _feedbackController.text.trim();
 
       if (senderEmail.isEmpty || feedback.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please fill in all fields')),
-        );
+        SnackbarHelper.showSuccessSnackbar(message: 'Please fill in all fields');
         return;
       }
 
@@ -63,18 +62,12 @@ import '../config/variables.dart';
         }
 
         if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email client opened with feedback.')),
-        );
+        SnackbarHelper.showSuccessSnackbar(message: 'Email client opened with feedback');
 
         _emailController.clear();
         _feedbackController.clear();
       } catch (e) {
-        print(e);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to open email client: $e')),
-        );
+        SnackbarHelper.showSuccessSnackbar(message: 'Failed to open email client');
       }
 
       setState(() {
