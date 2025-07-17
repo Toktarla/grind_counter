@@ -13,7 +13,7 @@ class GoalRepository {
     return await appDatabase.getAllGoals();
   }
 
-  Future<void> updateGoal(String exerciseType, int daily, int weekly, int monthly, int yearly) async {
-    await appDatabase.updateGoal(exerciseType, daily, weekly, monthly, yearly);
+  Future<bool> updateGoal(String exerciseType, int daily, int weekly, int monthly, int yearly) async {
+    return await appDatabase.updateGoal(exerciseType, daily, weekly, monthly, yearly);
   }
 }

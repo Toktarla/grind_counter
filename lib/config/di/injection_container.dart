@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/data/local/app_database.dart';
 import 'package:work_out_app/providers/exercise_type_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/goal_provider.dart';
 import '../../repositories/goal_repository.dart';
 import '../../repositories/progress_repository.dart';
 
@@ -18,10 +19,13 @@ Future<void> setupServiceLocator() async {
 
   // Local Storage
   sl.registerSingleton<SharedPreferences>(prefs);
-  sl.registerLazySingleton<AppDatabase>(() => AppDatabase());
+   final db = AppDatabase();
+  await db.init();
+  sl.registerSingleton<AppDatabase>(db);
 
   sl.registerLazySingleton<ProgressRepository>(() => ProgressRepository(sl()));
   sl.registerLazySingleton<GoalRepository>(() => GoalRepository(sl()));
+  sl.registerSingleton<GoalProvider>(GoalProvider());
 
   sl.registerFactory<ThemeProvider>(() => ThemeProvider(sl()));
   sl.registerFactory<ExerciseTypeProvider>(() => ExerciseTypeProvider());

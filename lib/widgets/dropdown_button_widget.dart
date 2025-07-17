@@ -19,9 +19,9 @@ class DropdownButtonWidget extends StatelessWidget {
     final exerciseTypes = context.watch<ExerciseTypeProvider>().exerciseTypes;
 
     if (exerciseTypes.isEmpty) {
-      return const SizedBox(
-        height: 40,
-        child: Center(child: Text('No exercises available')),
+      return const Align(
+          alignment: Alignment.topLeft,
+          child: Text('No exercises yet', overflow: TextOverflow.ellipsis)
       );
     }
 

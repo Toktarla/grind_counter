@@ -47,7 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
               Navigator.pushNamed(context, '/Feedback');
             },
             icon: const Icon(Icons.feedback_outlined),
-          )
+          ),
         ],
       ),
       body: Column(

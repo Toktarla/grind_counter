@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:work_out_app/services/ranking_service.dart';
+import 'package:work_out_app/utils/dialogs/delete_confirmation_dialog.dart';
 import '../data/data.dart';
 import '../providers/theme_provider.dart';
 
@@ -32,8 +33,20 @@ class MyDrawer extends StatelessWidget {
         icon: Icons.lock_reset,
         title: 'Reset Ranking Progress',
         onTap: () {
-          RankingService.resetUserLevelProgress();
-          Navigator.pushNamed(context, '/Home');
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return DeleteConfirmationDialog(
+                title: 'Reset your rank',
+                contentText: 'Reset all your rank level',
+                actionTitle: 'Reset',
+                onDelete: () {
+                  RankingService.resetUserLevelProgress();
+                  Navigator.pushNamed(context, '/Home');
+                },
+              );
+            },
+          );
         },
       ),
       _DrawerItem(

@@ -17,9 +17,11 @@ class AppDatabase extends _$AppDatabase {
           final dbFolder = await getApplicationDocumentsDirectory();
           final file = File(p.join(dbFolder.path, 'db.sqlite'));
           return NativeDatabase(file);
-        })) {
-    _initializeGoals();
-    _initializeExerciseTypes();
+        }));
+
+  Future<void> init() async {
+    await _initializeExerciseTypes();
+    await _initializeGoals();
   }
 
   @override
@@ -94,15 +96,19 @@ class AppDatabase extends _$AppDatabase {
     return await select(goals).get();
   }
 
-  Future<void> updateGoal(String exerciseType, int daily, int weekly,
-      int monthly, int yearly) async {
-    await (update(goals)..where((tbl) => tbl.exerciseType.equals(exerciseType)))
-        .write(GoalsCompanion(
-      dailyGoal: Value(daily),
-      weeklyGoal: Value(weekly),
-      monthlyGoal: Value(monthly),
-      yearlyGoal: Value(yearly),
-    ));
+  Future<bool> updateGoal(String exerciseType, int daily, int weekly, int monthly, int yearly) async {
+    try {
+      await (update(goals)..where((tbl) => tbl.exerciseType.equals(exerciseType)))
+          .write(GoalsCompanion(
+        dailyGoal: Value(daily),
+        weeklyGoal: Value(weekly),
+        monthlyGoal: Value(monthly),
+        yearlyGoal: Value(yearly),
+      ));
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> addExerciseProgress(
@@ -248,22 +254,50 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<int> addExerciseType(String name, String icon) async {
-    return await into(exerciseTypes).insert(
-      ExerciseTypesCompanion(
-        name: Value(name),
-        icon: Value(icon),
-        isDefault: const Value(false),
-      ),
-    );
-  }
+  final id = await into(exerciseTypes).insert(
+    ExerciseTypesCompanion(
+      name: Value(name),
+      icon: Value(icon),
+      isDefault: const Value(false),
+    ),
+  );
+  // Insert default goals for the new exercise type
+  await into(goals).insert(
+    GoalsCompanion.insert(
+      exerciseType: name,
+      dailyGoal: const Value(10),
+      weeklyGoal: const Value(50),
+      monthlyGoal: const Value(1500),
+      yearlyGoal: const Value(15000),
+    ),
+    mode: InsertMode.insertOrIgnore,
+  );
+  return id;
+}
 
   Future<void> updateExerciseType(int id, String name, String icon) async {
+    // Fetch the old name before updating
+    final oldType = await (select(exerciseTypes)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+    final oldName = oldType?.name;
     await (update(exerciseTypes)..where((tbl) => tbl.id.equals(id))).write(
       ExerciseTypesCompanion(
         name: Value(name),
         icon: Value(icon),
       ),
     );
+    // If the name changed, update the goals and progress tables as well
+    if (oldName != null && oldName != name) {
+      await (update(goals)..where((tbl) => tbl.exerciseType.equals(oldName))).write(
+        GoalsCompanion(
+          exerciseType: Value(name),
+        ),
+      );
+      await (update(progress)..where((tbl) => tbl.exerciseType.equals(oldName))).write(
+        ProgressCompanion(
+          exerciseType: Value(name),
+        ),
+      );
+    }
   }
 
   Future<void> deleteExerciseType(int id) async {

@@ -4,27 +4,37 @@ import '../../config/app_colors.dart';
 
 class DeleteConfirmationDialog extends StatelessWidget {
   final VoidCallback onDelete;
+  final String title;
+  final String contentText;
+  final String actionTitle;
 
-  const DeleteConfirmationDialog({super.key, required this.onDelete});
+  const DeleteConfirmationDialog({super.key,
+    required this.onDelete,
+    required this.title,
+    required this.contentText,
+    required this.actionTitle,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Confirm Delete"),
-      content: const Text("Are you sure you want to delete all progress records?"),
+      title: Text(title),
+      content: Text(contentText),
       actions: <Widget>[
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text("Cancel", style: TextStyle(color: AppColors.blueAccentColor),),
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: AppColors.blueAccentColor),
+          ),
         ),
         TextButton(
           onPressed: () {
             onDelete();
-            Navigator.of(context).pop();
           },
-          child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          child: Text(actionTitle, style: const TextStyle(color: Colors.red)),
         ),
       ],
     );

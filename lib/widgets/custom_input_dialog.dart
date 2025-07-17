@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_text_field.dart';
 
-class CustomInputDialog extends StatelessWidget {
+class CustomInputDialog extends StatefulWidget {
   final String title;
   final String hintText;
   final String confirmText;
@@ -21,24 +21,41 @@ class CustomInputDialog extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final controller = TextEditingController(text: initialValue ?? "");
+  State<CustomInputDialog> createState() => _CustomInputDialogState();
+}
 
+class _CustomInputDialogState extends State<CustomInputDialog> {
+  late final TextEditingController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController(text: widget.initialValue ?? "");
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Text(title, style: Theme.of(context).textTheme.titleLarge),
+      title: Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             AppTextField(
               controller: controller,
-              hintText: hintText,
+              hintText: widget.hintText,
             ),
-            if (extraContent != null) ...[
+            if (widget.extraContent != null) ...[
               const SizedBox(height: 16),
-              extraContent!,
+              widget.extraContent!,
             ],
           ],
         ),
@@ -52,10 +69,10 @@ class CustomInputDialog extends StatelessWidget {
           onPressed: () {
             final text = controller.text.trim();
             if (text.isNotEmpty) {
-              onConfirm(text);
+              widget.onConfirm(text);
             }
           },
-          child: Text(confirmText, style: Theme.of(context).textTheme.titleLarge),
+          child: Text(widget.confirmText, style: Theme.of(context).textTheme.titleLarge),
         ),
       ],
     );

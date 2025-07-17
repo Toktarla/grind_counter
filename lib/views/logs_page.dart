@@ -8,6 +8,10 @@ import '../config/di/injection_container.dart';
 import '../data/data.dart';
 import '../repositories/progress_repository.dart';
 import '../utils/dialogs/delete_confirmation_dialog.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../providers/exercise_type_provider.dart';
+import '../widgets/empty_state_widget.dart';
 
 class LogsPage extends StatefulWidget {
   const LogsPage({super.key});
@@ -18,7 +22,31 @@ class LogsPage extends StatefulWidget {
 
 class _LogsPageState extends State<LogsPage> {
   final progressRepository = sl<ProgressRepository>();
-  String selectedExercise = 'Push-ups';
+  String selectedExercise = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedExercise();
+  }
+
+  Future<void> _loadSelectedExercise() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('selectedExercise');
+    if (!mounted) return;
+    final exerciseTypes = Provider.of<ExerciseTypeProvider>(context, listen: false).exerciseTypes;
+    String validExercise = '';
+    if (saved != null && saved.isNotEmpty && exerciseTypes.any((e) => e.name == saved)) {
+      validExercise = saved;
+    } else if (exerciseTypes.isNotEmpty) {
+      validExercise = exerciseTypes.first.name;
+      // Update SharedPreferences to the new valid exercise
+      await prefs.setString('selectedExercise', validExercise);
+    }
+    setState(() {
+      selectedExercise = validExercise;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,19 +61,28 @@ class _LogsPageState extends State<LogsPage> {
         title: const Text('Workout History'),
         actions: [
           IconButton(
-            onPressed: () {
-              showDialog(
+            onPressed: () async {
+              final confirmed = await showDialog<bool>(
                 context: context,
                 builder: (BuildContext context) {
                   return DeleteConfirmationDialog(
+                    title: 'Confirm Delete',
+                    actionTitle: 'Delete',
+                    contentText: "Are you sure you want to delete all progress records?",
                     onDelete: () {
-                      progressRepository.deleteAllProgressRecords();
-                      SnackbarHelper.showSuccessSnackbar(message: 'Progress records deleted');
-                      Navigator.pop(context);
+                      Navigator.pop(context, true);
                     },
                   );
                 },
               );
+
+              if (confirmed == true) {
+                await progressRepository.deleteAllProgressRecords();
+                if (context.mounted) {
+                  setState(() {});
+                  SnackbarHelper.showSuccessSnackbar(message: 'Progress records deleted');
+                }
+              }
             },
             icon: const Icon(Icons.delete),
           ),
@@ -57,11 +94,13 @@ class _LogsPageState extends State<LogsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: DropdownButtonWidget(
               value: selectedExercise,
-              onChanged: (value) {
+              onChanged: (value) async {
                 if (value != null) {
                   setState(() {
                     selectedExercise = value;
                   });
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setString('selectedExercise', value);
                 }
               },
             ),
@@ -75,7 +114,10 @@ class _LogsPageState extends State<LogsPage> {
                 } else if (snapshot.hasError) {
                   return const Center(child: Text('Error loading logs'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No workout logs available'));
+                  return const EmptyStateWidget(
+                    icon: Icons.fitness_center,
+                    title: 'No workout logs available',
+                  );
                 }
 
                 return GroupedLogsView(

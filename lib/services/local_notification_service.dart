@@ -11,7 +11,7 @@ class LocalNotificationService {
   static const androidDetails = AndroidNotificationDetails(
       'daily_notification_channel',
       'Let\'s grind!',
-      icon: "@mipmap/launcher_icon", // Replace with your launcher icon
+      icon: "@mipmap/launcher_icon",
       channelDescription: 'Get notified to grind',
       importance: Importance.high,
       priority: Priority.high,
@@ -30,12 +30,13 @@ class LocalNotificationService {
       initializationSettingsAndroid,
       onDidReceiveNotificationResponse: (details) {
         if (details.input != null) {
-          print("onDidReceiveNotificationResponse, ${details.input} !!! ${details}");
+          print("onDidReceiveNotificationResponse, ${details.input} !!! $details");
         }
       },
     );
     final bool? granted = await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.areNotificationsEnabled();
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestExactAlarmsPermission();
     print("Notifications Granted: $granted");
   }
 
@@ -56,7 +57,7 @@ class LocalNotificationService {
       message,
       scheduledTime,
       notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
     );
 

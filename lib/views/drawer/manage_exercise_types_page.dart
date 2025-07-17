@@ -16,11 +16,37 @@ class ManageExerciseTypesPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Manage Exercise Types')),
-      body: types.isEmpty
-          ? const Center(child: Text('No exercise types found.'))
-          : ListView.builder(
-        itemCount: types.length,
-        itemBuilder: (_, index) => _buildExerciseTypeTile(context, provider, types[index]),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Center(
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "Here you can add, rename, or delete your own exercise types.",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: types.isEmpty
+                ? const Center(child: Text('No exercise types found.'))
+                : ListView.builder(
+              itemCount: types.length,
+              itemBuilder: (_, index) => _buildExerciseTypeTile(context, provider, types[index]),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddExerciseTypeDialog(context, provider),
